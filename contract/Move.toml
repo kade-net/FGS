@@ -1,0 +1,22 @@
+[package]
+name = "fgs"
+version = "1.0.0"
+authors = []
+
+[addresses]
+fgs="0x58bf9d22bd9f1541b2bd81b71094a84916bb401a03db7288da407a489b254cde"
+[dev-addresses]
+
+[dependencies.AptosFramework]
+git = "https://github.com/aptos-labs/aptos-core.git"
+rev = "mainnet"
+subdir = "aptos-move/framework/aptos-framework"
+[dependencies.AptosTokenObjects]
+git = "https://github.com/aptos-labs/aptos-core.git"
+subdir = "aptos-move/framework/aptos-token-objects/"
+rev = "mainnet"
+[dependencies.KADE_NETWORK]
+git = "https://github.com/kade-net/network.git"
+rev = "main"
+
+[dev-dependencies]

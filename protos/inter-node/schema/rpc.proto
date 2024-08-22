@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+import "events.proto";
+
+
+
+service InterNodeService {
+    rpc SendMessageEvent(inter_node.MessageEvent) returns (inter_node.AckEvent);
+    rpc SendInviteCreateEvent(inter_node.InviteCreateEvent) returns (inter_node.AckEvent);
+    rpc SendInviteAcceptEvent(inter_node.InviteAcceptEvent) returns (inter_node.AckEvent);
+    rpc SendInviteRejectEvent(inter_node.InviteRejectEvent) returns (inter_node.AckEvent);
+    rpc SendRequestNodeChangeAuthorizationString(inter_node.RequestNodeChangeAuthorizationString) returns (inter_node.NodeChangeAuthorizationString);
+    rpc SendChangeActiveNodeEvent(inter_node.ChangeActiveNodeEvent) returns (inter_node.AckEvent);
+    rpc DownloadMessageEventsToNewActiveNode(inter_node.MessageDownloadRequest) returns (stream inter_node.MessageEvent);
+}

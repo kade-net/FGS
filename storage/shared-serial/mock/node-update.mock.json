@@ -1,0 +1,29 @@
+[
+  {
+    "namespace": "network-1",
+    "protocol_endpoint": "https://node1.network1.com",
+    "active": true,
+    "node_id": "101",
+    "timestamp": "2024-08-20T12:34:56Z",
+    "update_type": "create",
+    "public_key": "0412ab3cd5ef6789abcd1234567890abcdef1234567890abcdef1234567890ab"
+  },
+  {
+    "namespace": "network-2",
+    "protocol_endpoint": "https://node2.network2.com",
+    "active": false,
+    "node_id": "102",
+    "timestamp": "2024-08-20T13:47:00Z",
+    "update_type": "update",
+    "public_key": "0412ab3cd5ef6789abcd1234567890abcdef1234567890abcdef1234567890cd"
+  },
+  {
+    "namespace": "network-3",
+    "protocol_endpoint": "https://node3.network3.com",
+    "active": true,
+    "node_id": "103",
+    "timestamp": "2024-08-20T14:20:15Z",
+    "update_type": "create",
+    "public_key": "0412ab3cd5ef6789abcd1234567890abcdef1234567890abcdef1234567890ef"
+  }
+]

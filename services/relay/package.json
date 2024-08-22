@@ -1,0 +1,25 @@
+{
+  "name": "relay",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^22.4.1",
+    "tsup": "^8.2.4",
+    "typescript": "^5.5.4"
+  },
+  "dependencies": {
+    "@grpc/grpc-js": "^1.11.1",
+    "config": "workspace:*",
+    "drizzle-orm": "^0.33.0",
+    "inter-node": "workspace:*",
+    "local-storage": "workspace:*",
+    "schema": "workspace:*"
+  }
+}

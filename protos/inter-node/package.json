@@ -1,0 +1,34 @@
+{
+  "name": "inter-node",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "scripts": {
+    "generate": "rm -rf  generated/* && sh ./build.sh",
+    "build": "rm -rf ./dist && tsup"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@grpc/grpc-js": "^1.11.1",
+    "google-protobuf": "^3.21.4",
+    "protoc-gen-ts": "^0.8.7"
+  },
+  "devDependencies": {
+    "@types/google-protobuf": "^3.15.12",
+    "@types/node": "^22.4.1",
+    "drizzle-orm": "^0.33.0",
+    "tsup": "^8.2.4",
+    "typescript": "^5.5.4"
+  },
+  "peerDependencies": {
+    "@grpc/grpc-js": "^1.11.1"
+  }
+}

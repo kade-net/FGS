@@ -1,0 +1,22 @@
+[
+  {
+    "currentNode": "node-123",
+    "address": "0xAbC1234567890Def1234567890abcdef12345678",
+    "publicKey": "0412ab3cd5ef6789abcd1234567890abcdef1234567890abcdef1234567890ab",
+    "signedPublicKey": "3045022100abcd1234567890abcdef1234567890abcdef1234567890abcdef1234567890ab022034567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+    "encryptedPrivateKey": "3eF4fE3dD0cAEf5b3fF4dE3dF3eD4FeD3e4d5Fe3e4DfD3e4DfD3e4DfD3e4DfD3",
+    "randAuthString": "q1w2e3r4t5y6u7i8o9p0",
+    "signature": "5eF6dF5eF6dF5eF6dF5eF6dF5eF6dF5eF6dF5eF6dF5eF6dF5eF6dF5eF6dF5eF6",
+    "timestamp": "2024-08-20T12:34:56Z"
+  },
+  {
+    "currentNode": "node-456",
+    "address": "0xDef1234567890abcdef1234567890abcdef1234",
+    "publicKey": "0412ab3cd5ef6789abcd1234567890abcdef1234567890abcdef1234567890cd",
+    "signedPublicKey": "3045022100abcd1234567890abcdef1234567890abcdef1234567890abcdef1234567890cd022034567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+    "encryptedPrivateKey": "4eF4fE3dD0cAEf5b4fF4dE3dF3eD4FeD4e4d5Fe4e4DfD4e4DfD4e4DfD4e4DfD4",
+    "randAuthString": "z9x8c7v6b5n4m3q2w1",
+    "signature": "6eF6dF6eF6dF6eF6dF6eF6dF6eF6dF6eF6dF6eF6dF6eF6dF6eF6dF6eF6dF6eF6",
+    "timestamp": "2024-08-20T13:47:00Z"
+  }
+]

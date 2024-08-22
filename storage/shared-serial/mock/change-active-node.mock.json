@@ -1,0 +1,18 @@
+[
+  {
+    "node": "node-123",
+    "newActiveNode": "node-789",
+    "address": "0xAbC1234567890Def1234567890abcdef12345678",
+    "randomAuth": "p0o9i8u7y6t5r4e3w2q1",
+    "signature": "7eF6dF7eF6dF7eF6dF7eF6dF7eF6dF7eF6dF7eF6dF7eF6dF7eF6dF7eF6dF7eF6",
+    "timestamp": "2024-08-20T14:20:15Z"
+  },
+  {
+    "node": "node-456",
+    "newActiveNode": "node-101",
+    "address": "0xDef1234567890abcdef1234567890abcdef1234",
+    "randomAuth": "m3n4b5v6c7x8z9q2w1e",
+    "signature": "8eF6dF8eF6dF8eF6dF8eF6dF8eF6dF8eF6dF8eF6dF8eF6dF8eF6dF8eF6dF8eF6",
+    "timestamp": "2024-08-20T15:30:20Z"
+  }
+]

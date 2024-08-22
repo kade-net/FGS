@@ -1,0 +1,94 @@
+[
+  {
+    "type": "node_update",
+    "namespace": "node-101",
+    "protocol_endpoint": "https://node101.network.com",
+    "active": true,
+    "node_id": "101",
+    "timestamp": "2024-08-20T12:00:00Z",
+    "update_type": "create",
+    "public_key": "0412ab3cd5ef6789abcd1234567890abcdef1234567890abcdef1234567890ab"
+  },
+  {
+    "type": "node_update",
+    "namespace": "node-102",
+    "protocol_endpoint": "https://node102.network.com",
+    "active": true,
+    "node_id": "102",
+    "timestamp": "2024-08-20T12:10:00Z",
+    "update_type": "create",
+    "public_key": "0412ab3cd5ef6789abcd1234567890abcdef1234567890abcdef1234567890cd"
+  },
+  {
+    "type": "register_inbox",
+    "currentNode": "node-101",
+    "address": "0xAbC1234567890Def1234567890abcdef12345678",
+    "publicKey": "0412ab3cd5ef6789abcd1234567890abcdef1234567890abcdef1234567890ab",
+    "signedPublicKey": "3045022100abcd1234567890abcdef1234567890abcdef1234567890abcdef1234567890ab022034567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+    "encryptedPrivateKey": "3eF4fE3dD0cAEf5b3fF4dE3dF3eD4FeD3e4d5Fe3e4DfD3e4DfD3e4DfD3e4DfD3",
+    "randAuthString": "q1w2e3r4t5y6u7i8o9p0",
+    "signature": "5eF6dF5eF6dF5eF6dF5eF6dF5eF6dF5eF6dF5eF6dF5eF6dF5eF6dF5eF6dF5eF6",
+    "timestamp": "2024-08-20T12:20:00Z"
+  },
+  {
+    "type": "register_inbox",
+    "currentNode": "node-102",
+    "address": "0xDef1234567890abcdef1234567890abcdef1234",
+    "publicKey": "0412ab3cd5ef6789abcd1234567890abcdef1234567890abcdef1234567890cd",
+    "signedPublicKey": "3045022100abcd1234567890abcdef1234567890abcdef1234567890abcdef1234567890cd022034567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+    "encryptedPrivateKey": "4eF4fE3dD0cAEf5b4fF4dE3dF3eD4FeD4e4d5Fe4e4DfD4e4DfD4e4DfD4e4DfD4",
+    "randAuthString": "z9x8c7v6b5n4m3q2w1",
+    "signature": "6eF6dF6eF6dF6eF6dF6eF6dF6eF6dF6eF6dF6eF6dF6eF6dF6eF6dF6eF6dF6eF6",
+    "timestamp": "2024-08-20T12:30:00Z"
+  },
+  {
+    "type": "change_active_node",
+    "node": "node-101",
+    "newActiveNode": "node-102",
+    "address": "0xAbC1234567890Def1234567890abcdef12345678",
+    "randomAuth": "p0o9i8u7y6t5r4e3w2q1",
+    "signature": "7eF6dF7eF6dF7eF6dF7eF6dF7eF6dF7eF6dF7eF6dF7eF6dF7eF6dF7eF6dF7eF6",
+    "timestamp": "2024-08-20T12:40:00Z"
+  },
+  {
+    "type": "node_update",
+    "namespace": "node-101",
+    "protocol_endpoint": "https://node101.network.com",
+    "active": false,
+    "node_id": "101",
+    "timestamp": "2024-08-20T12:50:00Z",
+    "update_type": "update",
+    "public_key": "0412ab3cd5ef6789abcd1234567890abcdef1234567890abcdef1234567890ab"
+  },
+
+  {
+    "type": "node_update",
+    "namespace": "node-103",
+    "protocol_endpoint": "https://node103.network.com",
+    "active": true,
+    "node_id": "103",
+    "timestamp": "2024-08-20T13:10:00Z",
+    "update_type": "create",
+    "public_key": "0412ab3cd5ef6789abcd1234567890abcdef1234567890abcdef1234567890ef"
+  },
+  {
+    "type": "register_inbox",
+    "currentNode": "node-103",
+    "address": "0x1234567890abcdef1234567890abcdef12345678",
+    "publicKey": "0412ab3cd5ef6789abcd1234567890abcdef1234567890abcdef1234567890ef",
+    "signedPublicKey": "3045022100abcd1234567890abcdef1234567890abcdef1234567890abcdef1234567890ef022034567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+    "encryptedPrivateKey": "5eF4fE3dD0cAEf5b5fF4dE3dF3eD4FeD5e4d5Fe5e4DfD5e4DfD5e4DfD5e4DfD5",
+    "randAuthString": "l4k3j2h1g5f6d7s8a9q0",
+    "signature": "9eF6dF9eF6dF9eF6dF9eF6dF9eF6dF9eF6dF9eF6dF9eF6dF9eF6dF9eF6dF9eF6",
+    "timestamp": "2024-08-20T13:20:00Z"
+  },
+  {
+    "type": "change_active_node",
+    "node": "node-102",
+    "newActiveNode": "node-103",
+    "address": "0xDef1234567890abcdef1234567890abcdef1234",
+    "randomAuth": "m3n4b5v6c7x8z9q2w1e",
+    "signature": "8eF6dF8eF6dF8eF6dF8eF6dF8eF6dF8eF6dF8eF6dF8eF6dF8eF6dF8eF6dF8eF6",
+    "timestamp": "2024-08-20T13:00:00Z"
+  }
+]

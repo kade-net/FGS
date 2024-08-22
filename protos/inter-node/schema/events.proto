@@ -1,0 +1,79 @@
+syntax = "proto3";
+
+package inter_node;
+
+message MessageEvent {
+    string to = 1;
+    string conversationId = 2;
+    string encryptedContent = 3;
+    int64 timestamp = 4;
+    string signature = 5;
+}
+
+
+message InviteCreateEvent {
+    string to = 1;
+    string from = 2;
+    string encryptedConversationId = 3;
+    int64 timestamp = 4;
+    string signature = 5;
+}
+
+message InviteAcceptEvent {
+    string to = 1;
+    string encryptedConversationId = 2;
+    int64 timestamp = 3;
+    string signature = 4;
+}
+
+message InviteRejectEvent {
+    string to = 1;
+    string encryptedConversationId = 2;
+    int64 timestamp = 3;
+    string signature = 4;
+}
+
+message RequestNodeChangeAuthorizationString {
+    string address = 1; 
+    int64 timestamp =2;
+    string newNodeNamespace = 3;
+    string signature = 4;
+}
+
+message NodeChangeAuthorizationString {
+    string address = 1;
+    int64 timestamp = 2;
+    string authorizationRequestString = 3;
+
+    string signature = 4;
+    
+}
+
+message ChangeActiveNodeEvent {
+    string address = 1;
+    int64 timestamp = 3;
+    string userAuthorizationString = 4;
+    string signature = 5;
+}
+
+enum AckType {
+    MESSAGE = 0;
+    INVITE_CREATE = 1;
+    INVITE_ACCEPT = 2;
+    INVITE_REJECT = 3;
+    CHANGE_ACTIVE_NODE = 4;
+}
+
+message AckEvent {
+    string node = 1;
+    AckType ackType = 2;
+    int64 timestamp = 3;
+    string signature = 4;
+}
+
+
+message MessageDownloadRequest {
+    string signature = 1;
+    string node = 2;
+    string userAddress = 3;
+}

@@ -1,0 +1,206 @@
+{
+  "id": "c47810e5-5809-452d-b8d7-cc81acecc6f8",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.inbox": {
+      "name": "inbox",
+      "schema": "",
+      "columns": {
+        "address": {
+          "name": "address",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "currentNode": {
+          "name": "currentNode",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "publicKey": {
+          "name": "publicKey",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "signedPublicKey": {
+          "name": "signedPublicKey",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "encryptedPrivateKey": {
+          "name": "encryptedPrivateKey",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "randAuthString": {
+          "name": "randAuthString",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "signature": {
+          "name": "signature",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "timestamp": {
+          "name": "timestamp",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "inbox_currentNode_nodes_namespace_fk": {
+          "name": "inbox_currentNode_nodes_namespace_fk",
+          "tableFrom": "inbox",
+          "tableTo": "nodes",
+          "columnsFrom": [
+            "currentNode"
+          ],
+          "columnsTo": [
+            "namespace"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "inbox_address_unique": {
+          "name": "inbox_address_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "address"
+          ]
+        },
+        "inbox_publicKey_unique": {
+          "name": "inbox_publicKey_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "publicKey"
+          ]
+        },
+        "inbox_signedPublicKey_unique": {
+          "name": "inbox_signedPublicKey_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "signedPublicKey"
+          ]
+        },
+        "inbox_encryptedPrivateKey_unique": {
+          "name": "inbox_encryptedPrivateKey_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "encryptedPrivateKey"
+          ]
+        },
+        "inbox_randAuthString_unique": {
+          "name": "inbox_randAuthString_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "randAuthString"
+          ]
+        },
+        "inbox_signature_unique": {
+          "name": "inbox_signature_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "signature"
+          ]
+        }
+      }
+    },
+    "public.nodes": {
+      "name": "nodes",
+      "schema": "",
+      "columns": {
+        "namespace": {
+          "name": "namespace",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "protocol_endpoint": {
+          "name": "protocol_endpoint",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "active": {
+          "name": "active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "node_id": {
+          "name": "node_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "public_key": {
+          "name": "public_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "timestamp": {
+          "name": "timestamp",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "nodes_namespace_unique": {
+          "name": "nodes_namespace_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "namespace"
+          ]
+        },
+        "nodes_protocol_endpoint_unique": {
+          "name": "nodes_protocol_endpoint_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "protocol_endpoint"
+          ]
+        },
+        "nodes_node_id_unique": {
+          "name": "nodes_node_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "node_id"
+          ]
+        },
+        "nodes_public_key_unique": {
+          "name": "nodes_public_key_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "public_key"
+          ]
+        }
+      }
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

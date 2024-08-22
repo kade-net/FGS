@@ -36,7 +36,8 @@ module fgs::inbox_registry {
         address: address,
         randomAuth: string::String,
         signature: string::String, // this and all other signatures will be from the generate keypair
-        timestamp: u64
+        timestamp: u64,
+        ack: string::String // the new node first acknowledges the change requests then spins up a job to start compiling all the user's conversations
     }
 
     #[event]
@@ -122,7 +123,7 @@ module fgs::inbox_registry {
     }
 
 
-    public entry fun changeActiveNode(nodeOperator: &signer, newNode: string::String, address: address, randomAuth: string::String, signature: string::String){
+    public entry fun changeActiveNode(nodeOperator: &signer, newNode: string::String, address: address, randomAuth: string::String, signature: string::String, ack: string::String){
         let current_operator_address = signer::address_of(nodeOperator);
         let currentNode = node_registry::get_node_namespace(current_operator_address);
         let newNodeDetails = node_registry::get_node_details(newNode);
@@ -133,7 +134,8 @@ module fgs::inbox_registry {
             newActiveNode: newNode,
             address,
             timestamp: timestamp::now_seconds(),
-            node: currentNode
+            node: currentNode,
+            ack
         });
     }
 

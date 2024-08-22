@@ -37,7 +37,8 @@ module fgs::node_registry {
         protocol_endpoint: string::String,
         active: bool,
         node_id: u64,
-        created_at: u64
+        created_at: u64,
+        public_key: string::String
     }
 
     struct LocalReference has key, store, copy, drop {
@@ -60,7 +61,8 @@ module fgs::node_registry {
         active: bool,
         node_id: u64,
         timestamp: u64,
-        update_type: string::String // - can be create | update | deactivate | activate
+        update_type: string::String, // - can be create | update | deactivate | activate
+        public_key: string::String,
     }
 
     struct State has key {
@@ -86,7 +88,7 @@ module fgs::node_registry {
 
     }
 
-    fun internal_create_namespace(operator: &signer, namespace: string::String, endpoint: string::String) acquires State {
+    fun internal_create_namespace(operator: &signer, namespace: string::String, endpoint: string::String, publicKey: string::String) acquires State {
         let operator_address = signer::address_of(operator);
         utils::assert_has_no_special_characters(namespace);
         assert_namespace_does_not_exist(namespace);
@@ -114,7 +116,8 @@ module fgs::node_registry {
             active: true,
             node_id: state.node_count,
             protocol_endpoint: endpoint,
-            created_at: timestamp::now_seconds()
+            created_at: timestamp::now_seconds(),
+            public_key: publicKey
         });
 
         move_to(operator, LocalReference {
@@ -136,7 +139,8 @@ module fgs::node_registry {
             active: true,
             namespace,
             timestamp: timestamp::now_seconds(),
-            update_type: string::utf8(b"create")
+            update_type: string::utf8(b"create"),
+            public_key: publicKey
         });
 
         state.node_count = state.node_count + 1;
@@ -153,9 +157,9 @@ module fgs::node_registry {
 
     }
 
-    public entry fun fgs_register_namespace(admin: &signer, operator: &signer, namespace: string::String, endpoint: string::String) acquires State {
+    public entry fun fgs_register_namespace(admin: &signer, operator: &signer, namespace: string::String, endpoint: string::String, publicKey: string::String) acquires State {
         assert!(signer::address_of(admin) == @fgs, EOPERATION_NOT_PERMITTED);
-        internal_create_namespace(operator,namespace, endpoint);
+        internal_create_namespace(operator,namespace, endpoint, publicKey);
     }
 
 
@@ -215,7 +219,7 @@ module fgs::node_registry {
 
         init_module(&admin);
 
-        fgs_register_namespace(&admin, &operator,string::utf8(b"kade"), string::utf8(b"fgs.kade.network"));
+        fgs_register_namespace(&admin, &operator,string::utf8(b"kade"), string::utf8(b"fgs.kade.network"), string::utf8(b""));
 
         let node = get_node_details(string::utf8(b"kade"));
 

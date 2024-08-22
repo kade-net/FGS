@@ -1,3 +1,88 @@
 scalar Date;
 scalar Json;
 
+input MESSAGE_INPUT {
+    sender: String!
+    signature: String!
+
+    to: String!
+    encryptedContent: String!
+    timestamp: Int!
+    conversationId: String!
+}
+
+input INVITE_INPUT {
+    sender: String!
+    signature: String!
+
+    to: String!
+    timestamp: Int!
+    encryptedConversationId: String!
+}
+
+input ACCEPT_INVITE_INPUT {
+    sender: String!
+    signature: String!
+
+    to: String!
+    timestamp: Int!
+    encryptedConversationId: String!
+}
+
+input REJECT_INVITE_INPUT {
+    sender: String!
+    signature: String!
+
+    to: String!
+    timestamp: Int!
+    encryptedConversationId: String!
+}
+
+input CHANGE_ACTIVE_NODE_REQUEST {
+    sender: String!
+    signature: String!
+
+    timestamp: Int!
+}
+
+type CHANGE_ACTIVE_NODE_RESPONSE {
+    authorizationRequestString: String!
+}
+
+input CHANGE_ACTIVE_NODE_CONFRIMATION {
+    sender: String!
+    signature: String!
+
+    authorizationRequestString: String!
+    signedAuthorizationRequestString: String!
+    timestamp: Int!
+}
+
+
+type Mutation {
+    sendMessage(input: MESSAGE_INPUT!): Boolean
+    invite(input: INVITE_INPUT!): Boolean
+    acceptInvite(input: ACCEPT_INVITE_INPUT!): Boolean
+    rejectInvite(input: REJECT_INVITE_INPUT!): Boolean
+    changeActiveNodeRequest(input: CHANGE_ACTIVE_NODE_REQUEST!): CHANGE_ACTIVE_NODE_RESPONSE
+    changeActiveNodeConfirmation(input: CHANGE_ACTIVE_NODE_CONFRIMATION!): Boolean
+}
+
+type INVITE {
+    from: String!
+    to: String!
+    timestamp: Int!
+    encryptedConversationId: String!
+}
+
+type MESSAGE {
+    encryptedContent: String!
+    timestamp: Int!
+    conversationId: String!
+}
+
+type Query {
+    invites: [INVITE]
+    messages(conversationId: String!): [MESSAGE]
+    conversationList: [String]
+}

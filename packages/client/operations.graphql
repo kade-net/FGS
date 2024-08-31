@@ -1,0 +1,43 @@
+
+query getConversation($conversation_id: String!){
+    conversation(conversation_id: $conversation_id){
+        conversation_id
+        messages {
+            id
+            conversation_id
+            encrypted_content
+            published
+            node
+        }
+    }
+}
+
+
+query getInvitations($address: String!, $type: INVITE_TYPE) {
+    invitations(address: $address, type: $type){
+        id
+        to
+        from
+        published
+        encrypted_conversation_id
+    }
+}
+
+
+mutation submitSignedActivity($input: SignedActivityInput!) {
+    submitSignedActivity(input: $input) {
+        type
+        acknowledged
+        signed_signature
+        identity
+    }
+}
+
+mutation submitDelivery($input: DeliveryActivityInput!) {
+    submitDelivery(input: $input){
+        type
+        acknowledged
+        signed_signature
+        identity
+    }
+}

@@ -1,0 +1,43 @@
+{
+  "name": "network",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "ts-node --esm ./src/index.ts",
+    "test-keys": "node ./generate-keys.js",
+    "build": "rm -rf ./dist && tsup",
+    "start": "node ./dist/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.4.1",
+    "@types/ws": "^8.5.12",
+    "ts-node": "^10.9.2",
+    "tsup": "^8.2.4",
+    "typescript": "^5.5.4"
+  },
+  "dependencies": {
+    "@apollo/server": "^4.11.0",
+    "@graphql-tools/schema": "^10.0.6",
+    "client": "workspace:*",
+    "config": "workspace:*",
+    "contract": "workspace:*",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "drizzle-orm": "^0.33.0",
+    "express": "^4.19.2",
+    "graphql": "^16.9.0",
+    "graphql-type-json": "^0.3.2",
+    "graphql-ws": "^5.16.0",
+    "storage": "workspace:*",
+    "tweetnacl": "^1.0.3",
+    "validation": "workspace:*",
+    "ws": "^8.18.0"
+  }
+}

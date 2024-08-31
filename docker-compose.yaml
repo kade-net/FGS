@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+
+  db:
+    image: postgres:14-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-fgs}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+
+  migrations:
+#    image: kade/fgs-monorepo-base
+    build:
+      context: ./layers/storage
+      dockerfile: Dockerfile
+    environment:
+      PG_CONNECTION_STRING: postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-fgs}
+    depends_on:
+      - db
+
+  api:
+#    image: kade/fgs-monorepo-base
+    build:
+      context: ./layers/network
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      PG_CONNECTION_STRING: postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-fgs}
+      NODE_ENV: ${NODE_ENV:-production}
+      CONFIG_NAMESPACE: ${CONFIG_NAMESPACE}
+      CONFIG_ROOT_DOMAIN: ${CONFIG_ROOT_DOMAIN}
+      CONFIG_APTOS_PRIVATE_KEY: ${CONFIG_APTOS_PRIVATE_KEY}
+      ENCRYPTION_SECRET_KEY_DO_NOT_EXPOSE: ${ENCRYPTION_SECRET_KEY_DO_NOT_EXPOSE}
+      SIGNING_SECRET_KEY_DO_NOT_EXPOSE: ${SIGNING_SECRET_KEY_DO_NOT_EXPOSE}
+      CONFIG_NETWORK: ${CONFIG_NETWORK-testnet}
+      CONFIG_TRANSACTION_HASH: ${CONFIG_TRANSACTION_HASH}
+      MODULE_ADDRESS: ${MODULE_ADDRESS}
+    ports:
+      - '4000:4000'
+    depends_on:
+      - db
+      - migrations
+
+volumes:
+  postgres_data:

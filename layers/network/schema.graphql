@@ -1,0 +1,135 @@
+scalar Date
+scalar JSON
+enum INVITE_TYPE {
+    PENDING
+    REJECTED
+    ACCEPTED
+}
+type Invitation {
+    id: String # to be generated server side
+    to: String!
+    from: String!
+    published: Int!
+    encrypted_conversation_id: String!
+}
+
+type Accept {
+    id: String # to be generated server side
+    invitation: String!
+    to: String!
+    from: String!
+    published: Int!
+}
+
+type Reject {
+    id: String # to be generated server side
+    to: String!
+    from: String!
+    invitation: String!
+    published: Int!
+}
+
+type Message {
+    id: String # to be generated server side
+    conversation_id: String!
+    encrypted_content: String!
+    published: Int!
+    node: String!
+}
+
+type Conversation {
+    conversation_id: String!
+    messages: [Message]
+}
+
+union ACTIVITY_TYPES = Invitation | Accept | Reject | Message
+
+type SIGNED_ACTIVITY {
+    type: String!
+    identity: String!
+    activity: ACTIVITY_TYPES!
+    signature: String!
+}
+
+
+type DELIVERY_ACTIVITY {
+    type: String!
+    activity: SIGNED_ACTIVITY!
+    published: Int!
+    signature: String! # server signature
+}
+
+
+input InvitationInput {
+    id: String
+    to: String!
+    from: String!
+    published: Int!
+    encrypted_conversation_id: String!
+}
+
+input AcceptInput {
+    id: String
+    to: String!
+    from: String!
+    invitation: String!
+    published: Int!
+}
+
+input RejectInput {
+    id: String
+    to: String!
+    from: String!
+    invitation: String!
+    published: Int!
+}
+
+input MessageInput {
+    id: String
+    conversation_id: String!
+    encrypted_content: String!
+    published: Int!
+    node: String!
+}
+
+input SignedActivityInput {
+    type: String!
+    identity: String!
+    activity: ActivityTypesInput!
+    signature: String!
+}
+
+input DeliveryActivityInput {
+    type: String!
+    identity: String!
+    activity: SignedActivityInput!
+    signature: String!
+}
+
+input ActivityTypesInput {
+    invitation: InvitationInput
+    accept: AcceptInput
+    reject: RejectInput
+    message: MessageInput
+}
+
+type Ack {
+    type: String!
+    identity: String!
+    id: String
+    acknowledged: Int!
+    signed_signature: String! # a signature of the signed signature
+}
+
+type Mutation {
+    submitSignedActivity(input: SignedActivityInput!): Ack!
+    submitDelivery(input: DeliveryActivityInput!): Ack!
+}
+
+type Query {
+    conversation(conversation_id: String!): Conversation!
+    invitations(address: String, type: INVITE_TYPE): [Invitation!]
+}
+
+
+

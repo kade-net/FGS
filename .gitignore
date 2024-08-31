@@ -3,3 +3,4 @@ dist
 .aptos
 .env
 node_modules
+*.mdb

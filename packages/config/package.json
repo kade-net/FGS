@@ -19,6 +19,7 @@
   "dependencies": {
     "@aptos-labs/ts-sdk": "^1.27.0",
     "lama": "workspace:*",
+    "tweetnacl": "^1.0.3",
     "tweetnacl-ts": "^1.0.3",
     "zod": "^3.23.8"
   },

@@ -33,12 +33,14 @@ module fgs::node_registry {
 
 
     struct Node has key, store {
+        operator: address,
         namespace: string::String,
         protocol_endpoint: string::String,
         active: bool,
         node_id: u64,
         created_at: u64,
-        public_key: string::String
+        sign_public_key: string::String,
+        encrypt_public_key: string::String,
     }
 
     struct LocalReference has key, store, copy, drop {
@@ -62,7 +64,8 @@ module fgs::node_registry {
         node_id: u64,
         timestamp: u64,
         update_type: string::String, // - can be create | update | deactivate | activate
-        public_key: string::String,
+        sign_public_key: string::String,
+        encrypt_public_key: string::String,
     }
 
     struct State has key {
@@ -88,7 +91,7 @@ module fgs::node_registry {
 
     }
 
-    fun internal_create_namespace(operator: &signer, namespace: string::String, endpoint: string::String, publicKey: string::String) acquires State {
+    fun internal_create_namespace(operator: &signer, namespace: string::String, endpoint: string::String, sign_public_key: string::String, encrypt_public_key: string::String) acquires State {
         let operator_address = signer::address_of(operator);
         utils::assert_has_no_special_characters(namespace);
         assert_namespace_does_not_exist(namespace);
@@ -112,12 +115,14 @@ module fgs::node_registry {
 
 
         move_to(&token_signer, Node {
+            operator: operator_address,
             namespace,
             active: true,
             node_id: state.node_count,
             protocol_endpoint: endpoint,
             created_at: timestamp::now_seconds(),
-            public_key: publicKey
+            sign_public_key,
+            encrypt_public_key
         });
 
         move_to(operator, LocalReference {
@@ -140,7 +145,8 @@ module fgs::node_registry {
             namespace,
             timestamp: timestamp::now_seconds(),
             update_type: string::utf8(b"create"),
-            public_key: publicKey
+            sign_public_key,
+            encrypt_public_key
         });
 
         state.node_count = state.node_count + 1;
@@ -157,43 +163,14 @@ module fgs::node_registry {
 
     }
 
-    public entry fun fgs_register_namespace(admin: &signer, operator: &signer, namespace: string::String, endpoint: string::String, publicKey: string::String) acquires State {
+    public entry fun fgs_register_namespace(admin: &signer, operator: &signer, namespace: string::String, endpoint: string::String, sign_public_key: string::String, encrypt_public_key: string::String) acquires State {
         assert!(signer::address_of(admin) == @fgs, EOPERATION_NOT_PERMITTED);
-        internal_create_namespace(operator,namespace, endpoint, publicKey);
+        internal_create_namespace(operator,namespace, endpoint, sign_public_key, encrypt_public_key);
     }
 
-
-    #[view]
-    public fun get_node_details(namespace: string::String): NodeReturn acquires Node {
-        let resource_address = account::create_resource_address(&@fgs, SEED);
-
-        let token_address = token::create_token_address(&resource_address, &string::utf8(NODE_COLLECTION_NAME), &namespace);
-
-        let is_object = object::is_object(token_address);
-
-        assert!(is_object, ENAMESPACE_DOES_NOT_EXIST);
-        assert!(exists<Node>(token_address), ENAMESPACE_DOES_NOT_EXIST);
-
-        let node = borrow_global<Node>(token_address);
-
-        let details = NodeReturn {
-            namespace: node.namespace,
-            created_at: node.created_at,
-            active: node.active,
-            node_id: node.node_id,
-            protocol_endpoint: node.protocol_endpoint
-        };
-
-        return details
-    }
-
-    #[view]
-    public fun get_node_details_from_address(operator_address: address): NodeReturn acquires Node, LocalReference {
-        let ref = borrow_global<LocalReference>(operator_address);
-
-        let details = get_node_details(ref.namespace);
-
-        return details
+    public entry fun operator_register_namespace(operator: &signer, namespace: string::String, endpoing: string::String, sign_public_key: string::String, encrypt_public_key: string::String) acquires State {
+        internal_create_namespace(operator,namespace,endpoing,sign_public_key, encrypt_public_key);
+        // TODO: charge a network fee
     }
 
 
@@ -204,13 +181,45 @@ module fgs::node_registry {
         return ref.namespace
     }
 
-    #[test_only]
-    public fun dependancy_test_init_module(admin: &signer){
-        init_module(admin)
+    #[view]
+    public fun get_node_address(namespace: string::String): address {
+        let resource_address = account::create_resource_address(&@fgs, SEED);
+
+        let token_address = token::create_token_address(&resource_address, &string::utf8(NODE_COLLECTION_NAME), &namespace);
+
+        let is_object = object::is_object(token_address);
+
+        assert!(is_object, ENAMESPACE_DOES_NOT_EXIST);
+        assert!(exists<Node>(token_address), ENAMESPACE_DOES_NOT_EXIST);
+
+        return token_address
+    }
+
+    #[view]
+    public fun get_operator_address(namespace: string::String): address acquires Node {
+        let token_address = get_node_address(namespace);
+
+        let node = borrow_global<Node>(token_address);
+
+        return node.operator
+    }
+
+    /**
+       - Assertions
+    **/
+    public(friend) fun asser_namespace_exists(namespace: string::String) {
+        let resource_address = account::create_resource_address(&@fgs, SEED);
+
+        let token_address = token::create_token_address(&resource_address, &string::utf8(NODE_COLLECTION_NAME), &namespace);
+
+        let is_object = object::is_object(token_address);
+
+        assert!(is_object, ENAMESPACE_DOES_NOT_EXIST);
+        assert!(exists<Node>(token_address), ENAMESPACE_DOES_NOT_EXIST);
     }
 
     #[test]
-    public fun test_register_node() acquires State, Node {
+    public fun test_register_node() acquires State {
         let admin = account::create_account_for_test(@fgs);
         let operator = account::create_account_for_test(@kade);
         let aptos_admin = account::create_account_for_test(@0x1);
@@ -219,11 +228,7 @@ module fgs::node_registry {
 
         init_module(&admin);
 
-        fgs_register_namespace(&admin, &operator,string::utf8(b"kade"), string::utf8(b"fgs.kade.network"), string::utf8(b""));
-
-        let node = get_node_details(string::utf8(b"kade"));
-
-        debug::print(&node);
+        fgs_register_namespace(&admin, &operator,string::utf8(b"kade"), string::utf8(b"fgs.kade.network"), string::utf8(b""), string::utf8(b""));
 
         let events = emitted_events<NodeUpdate>();
 

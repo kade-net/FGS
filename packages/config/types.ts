@@ -1,4 +1,4 @@
-import { BoxKeyPair } from 'tweetnacl-ts'
+import { BoxKeyPair, SignKeyPair } from 'tweetnacl-ts'
 
 export enum Network {
     Mainnet = 'mainnet',
@@ -11,7 +11,8 @@ export interface Config {
     // root domain of the current node
     rootDomain: string
     // the keypair of the current node to be used for encryption and signing of messages during inter-node communication
-    keypairDoNotExpose: BoxKeyPair
+    boxKeyPairDoNotExpose: BoxKeyPair
+    signKeyPairDoNotExpose: SignKeyPair
     // aptos private key to be used when submitting transactions to the blockchain
     aptosPrivateKeyDoNotExpose: string
     // aptos network to be used

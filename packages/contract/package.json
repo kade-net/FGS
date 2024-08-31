@@ -1,5 +1,5 @@
 {
-  "name": "lama",
+  "name": "contract",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -17,14 +17,15 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@types/lodash": "^4.17.7",
     "@types/node": "^22.4.1",
-    "ts-node": "^10.9.2",
     "tsup": "^8.2.4",
     "typescript": "^5.5.4"
   },
   "dependencies": {
-    "lmdb": "^3.0.13",
-    "lodash": "^4.17.21"
+    "aptos": "^1.21.0",
+    "zod": "^3.23.8"
+  },
+  "peerDependencies": {
+    "@aptos-labs/ts-sdk": "^1.27.0"
   }
 }

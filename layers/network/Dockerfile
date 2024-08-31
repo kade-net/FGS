@@ -1,0 +1,13 @@
+FROM kade/fgs-monorepo-base as network-prune
+WORKDIR app/network
+RUN npm i -g pnpm
+RUN pnpm --filter network --prod deploy network
+RUN ls -la
+
+FROM node:18-alpine
+WORKDIR /app/network
+
+RUN ls -la
+COPY --from=network-prune ./app/network .
+
+CMD npm run start

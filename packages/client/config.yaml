@@ -1,0 +1,20 @@
+schema: http://localhost:4000
+overwrite: true
+documents: ./operations.graphql
+generates:
+  ./generated/types.ts:
+    plugins:
+      - typescript
+  ./generated/operations.ts:
+    preset: import-types-preset
+    presetConfig:
+      typesPath: ./types
+    plugins:
+      - typescript-operations
+  ./generated/sdk.ts:
+    preset: import-types-preset
+    presetConfig:
+      typesPath:
+        - ./operations
+    plugins:
+      - typescript-graphql-request

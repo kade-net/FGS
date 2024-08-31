@@ -185,6 +185,9 @@ importers:
       '@aptos-labs/ts-sdk':
         specifier: ^1.27.0
         version: 1.27.0
+      contract:
+        specifier: workspace:*
+        version: link:../contract
       lama:
         specifier: workspace:*
         version: link:../lama
@@ -201,6 +204,9 @@ importers:
       '@types/node':
         specifier: ^22.4.1
         version: 22.4.1
+      dotenv:
+        specifier: ^16.4.5
+        version: 16.4.5
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@22.4.1)(typescript@5.5.4)
@@ -3927,7 +3933,6 @@ packages:
   /dotenv@16.4.5:
     resolution: {integrity: sha512-ZmdL2rui+eB2YwhsWzjInR8LldtZHGDoQ1ugH85ppHKwpUHL7j7rN0Ti9NCnGiQbhaZ11FpR+7ao1dNsmduNUg==}
     engines: {node: '>=12'}
-    dev: false
 
   /drizzle-kit@0.24.2:
     resolution: {integrity: sha512-nXOaTSFiuIaTMhS8WJC2d4EBeIcN9OSt2A2cyFbQYBAZbi7lRsVGJNqDpEwPqYfJz38yxbY/UtbvBBahBfnExQ==}

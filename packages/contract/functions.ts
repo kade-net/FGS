@@ -23,6 +23,7 @@ export const registerNamespace = async (operator: Account, args: Parameters<type
     })
 
     if(status.success){
+        console.log("HASH::", status.hash)
         return status
     }
 

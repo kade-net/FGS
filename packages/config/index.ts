@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import { ConfigProvider } from "./provider";
 import { Network } from "./types";
 import nacl from 'tweetnacl'

@@ -5,19 +5,22 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "build": "rm -rf ./dist && tsup"
+    "build": "rm -rf ./dist && tsup",
+    "register": "ts-node --esm ./register.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^22.4.1",
+    "dotenv": "^16.4.5",
     "ts-node": "^10.9.2",
     "tsup": "^8.2.4",
     "typescript": "^5.5.4"
   },
   "dependencies": {
     "@aptos-labs/ts-sdk": "^1.27.0",
+    "contract": "workspace:*",
     "lama": "workspace:*",
     "tweetnacl": "^1.0.3",
     "tweetnacl-ts": "^1.0.3",

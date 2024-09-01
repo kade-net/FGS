@@ -36,7 +36,7 @@ export const registerNamespace = async (operator: Account, args: Parameters<type
 export const getNode = async (namespace: string) => {
     const [node_address] = await aptos.view({
         payload: {
-            function: ENTRY_FUNCTIONS.get_node_address as any,
+            function: ENTRY_FUNCTIONS.get_node_address.path as any,
             functionArguments: [namespace]
         }
     })
@@ -53,4 +53,30 @@ export const getInbox = async (owner_address: string) => {
         accountAddress: owner_address ,
         resourceType: `${INBOX_REGISTRY_MODULE}::Inbox` as any,
     })
+}
+
+export const registerUser = async (inbox_owner: Account, args: Parameters<typeof NODE_ENTRY_FUNCTIONS.registerInbox.parseArgs>[number])=>{
+    const transaction = await  aptos.transaction.build.simple({
+        sender: inbox_owner.accountAddress.toString(),
+        data: {
+            function: NODE_ENTRY_FUNCTIONS.registerInbox.path as any,
+            functionArguments: NODE_ENTRY_FUNCTIONS.registerInbox.parseArgs(args),
+        }
+    })
+
+    const committedTxn = await aptos.transaction.signAndSubmitTransaction({
+        signer: inbox_owner,
+        transaction
+    })
+
+    const status = await aptos.waitForTransaction({
+        transactionHash: committedTxn.hash,
+    })
+
+    if(status.success){
+        console.log("HASH::", status.hash)
+
+    }else{
+        throw new Error("Transaction failed")
+    }
 }

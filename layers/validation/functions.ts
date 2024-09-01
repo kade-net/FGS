@@ -1,6 +1,7 @@
 import {SIGNED_ACTIVITY} from "./schema/activities";
 import {contract} from "contract";
 import nacl from 'tweetnacl'
+import nacl_util from 'tweetnacl-util'
 import config from "config";
 
 
@@ -12,9 +13,18 @@ export const verifySignedActivity = async (signedActivity: SIGNED_ACTIVITY<any>)
         throw new Error("Invalid signed activity type, NON EXISTENT initiator");
     }
 
-    const MESSAGE_BUFFER = Buffer.from(JSON.stringify(signedActivity.activity), 'utf-8')
-    const SIGNATURE = Buffer.from(signedActivity.signature, 'hex')
+    if(signedActivity.activity.published){
+        signedActivity.activity.published = new Date(signedActivity.activity.published).getTime();
+    }
+
+
+    console.log("activity to sign::", signedActivity.activity);
+
+    const MESSAGE_BUFFER = nacl_util.decodeUTF8(JSON.stringify(signedActivity.activity))
+    console.log("MESSAGE_BUFFER", Buffer.from(MESSAGE_BUFFER).toString('hex'))
+    const SIGNATURE = Buffer.from(signedActivity.signature, 'base64')
     const PUB_KEY = Buffer.from(initiator.sign_public_key, 'hex')
+
     const isValid = nacl.sign.detached.verify(MESSAGE_BUFFER, SIGNATURE, PUB_KEY)
 
     if(!isValid) {
@@ -26,8 +36,8 @@ export const verifySignedActivity = async (signedActivity: SIGNED_ACTIVITY<any>)
 
 
 export const signActivity = async (activity: Record<string, any>) => {
-    const ACTIVITY_BUFFER = Buffer.from(JSON.stringify(activity), 'utf-8')
+    const ACTIVITY_BUFFER = nacl_util.decodeUTF8(JSON.stringify(activity))
     const SIGNATURE = nacl.sign.detached(ACTIVITY_BUFFER, config.config.signKeyPairDoNotExpose.secretKey)
 
-    return Buffer.from(SIGNATURE).toString('hex')
+    return Buffer.from(SIGNATURE).toString('base64')
 }

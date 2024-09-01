@@ -14,6 +14,16 @@ export const NODE_ENTRY_FUNCTIONS = {
             sign_public_key: string,
             encrypt_public_key: string,
         }) => [args.namespace, args.endpoint, args.sign_public_key, args.encrypt_public_key]
+    },
+    registerInbox: {
+        path: `${INBOX_REGISTRY_MODULE}::registerInbox` as const,
+        parseArgs: (args: {node: string, randAuthString: string, sign_public_key: string, encrypt_public_key: string, encrypted_private_key_set: string}) => [
+            args.node,
+            args.randAuthString,
+            args.sign_public_key,
+            args.encrypt_public_key,
+            args.encrypted_private_key_set,
+        ]
     }
 }
 

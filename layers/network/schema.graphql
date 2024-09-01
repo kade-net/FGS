@@ -9,7 +9,7 @@ type Invitation {
     id: String # to be generated server side
     to: String!
     from: String!
-    published: Int!
+    published: Date!
     encrypted_conversation_id: String!
 }
 
@@ -18,7 +18,7 @@ type Accept {
     invitation: String!
     to: String!
     from: String!
-    published: Int!
+    published: Date!
 }
 
 type Reject {
@@ -26,14 +26,14 @@ type Reject {
     to: String!
     from: String!
     invitation: String!
-    published: Int!
+    published: Date!
 }
 
 type Message {
     id: String # to be generated server side
     conversation_id: String!
     encrypted_content: String!
-    published: Int!
+    published: Date!
     node: String!
 }
 
@@ -55,7 +55,7 @@ type SIGNED_ACTIVITY {
 type DELIVERY_ACTIVITY {
     type: String!
     activity: SIGNED_ACTIVITY!
-    published: Int!
+    published: Date!
     signature: String! # server signature
 }
 
@@ -64,7 +64,7 @@ input InvitationInput {
     id: String
     to: String!
     from: String!
-    published: Int!
+    published: Date!
     encrypted_conversation_id: String!
 }
 
@@ -73,7 +73,7 @@ input AcceptInput {
     to: String!
     from: String!
     invitation: String!
-    published: Int!
+    published: Date!
 }
 
 input RejectInput {
@@ -81,14 +81,14 @@ input RejectInput {
     to: String!
     from: String!
     invitation: String!
-    published: Int!
+    published: Date!
 }
 
 input MessageInput {
     id: String
     conversation_id: String!
     encrypted_content: String!
-    published: Int!
+    published: Date!
     node: String!
 }
 
@@ -117,7 +117,7 @@ type Ack {
     type: String!
     identity: String!
     id: String
-    acknowledged: Int!
+    acknowledged: Date!
     signed_signature: String! # a signature of the signed signature
 }
 

@@ -18,6 +18,7 @@ interface ResolverMap {
 
 const submitSignedActivity: FunResolver<any, InputArg<SignedActivityInput>, any> = async (_, args, __)=>{
 
+    console.log("Data::", args.input)
     const ACTIVITY_TYPE = args.input.activity.accept ? 'accept' :
         args.input.activity.message ? 'message' :
             args.input.activity.reject ? 'reject' :
@@ -57,9 +58,9 @@ const submitSignedActivity: FunResolver<any, InputArg<SignedActivityInput>, any>
 
             const client = getClient(node_details.protocol_endpoint)
 
-            await db.transaction(async (tx)=>{
+            return await db.transaction(async (tx)=>{
                 const id = accept?.id ?? utils.generateId('accept')
-
+                accept.id = id
                 await tx.insert(schema.userOutbox).values({
                     id,
                     activity: signedActivity.activity,
@@ -117,7 +118,7 @@ const submitSignedActivity: FunResolver<any, InputArg<SignedActivityInput>, any>
                     type: 'accept',
                     identity: config.config.namespace,
                     id,
-                    acknowledged: Date.now(),
+                    acknowledged: new Date(),
                     signed_signature: Buffer.from(signed_signature).toString('hex'),
                 }
             })
@@ -137,9 +138,9 @@ const submitSignedActivity: FunResolver<any, InputArg<SignedActivityInput>, any>
 
             const client = getClient(node_details.protocol_endpoint)
 
-            await db.transaction(async (tx)=>{
+            return await db.transaction(async (tx)=>{
                 const id = reject?.id ?? utils.generateId('reject')
-
+                reject.id = id
                 await tx.insert(schema.userOutbox).values({
                     id,
                     activity: signedActivity.activity,
@@ -196,7 +197,7 @@ const submitSignedActivity: FunResolver<any, InputArg<SignedActivityInput>, any>
                     type: 'reject',
                     identity: config.config.namespace,
                     id,
-                    acknowledged: Date.now(),
+                    acknowledged: new Date(),
                     signed_signature: Buffer.from(signed_signature).toString('hex'),
                 }
             })
@@ -211,9 +212,9 @@ const submitSignedActivity: FunResolver<any, InputArg<SignedActivityInput>, any>
 
             const client = getClient(node.protocol_endpoint)
 
-            await db.transaction(async (tx)=>{
+            return await db.transaction(async (tx)=>{
                 const id = message?.id ?? utils.generateId('message')
-
+                message.id =id
 
                     await tx.insert(schema.nodeInbox).values({
                         activity_type: 'message',
@@ -246,7 +247,7 @@ const submitSignedActivity: FunResolver<any, InputArg<SignedActivityInput>, any>
                     type: 'message',
                     identity: config.config.namespace,
                     id,
-                    acknowledged: Date.now(),
+                    acknowledged: new Date(),
                     signed_signature: Buffer.from(signed_signature).toString('hex'),
                 }
             })
@@ -267,9 +268,9 @@ const submitSignedActivity: FunResolver<any, InputArg<SignedActivityInput>, any>
 
             const client = getClient(node_details.protocol_endpoint)
 
-            await db.transaction(async (tx)=>{
+            return await db.transaction(async (tx)=>{
                 const id = invitation?.id ?? utils.generateId('invitation')
-
+                invitation.id = id
                 await tx.insert(schema.userOutbox).values({
                     id,
                     activity: signedActivity.activity,
@@ -327,7 +328,7 @@ const submitSignedActivity: FunResolver<any, InputArg<SignedActivityInput>, any>
                     type: 'invitation',
                     identity: config.config.namespace,
                     id,
-                    acknowledged: Date.now(),
+                    acknowledged: new Date(),
                     signed_signature: Buffer.from(signed_signature).toString('hex'),
                 }
 

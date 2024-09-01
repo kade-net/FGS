@@ -31,7 +31,10 @@ export const queryResolver: ResolverMap = {
 
             return {
                 conversation_id: args.conversation_id,
-                messages
+                messages: messages?.map((m)=>{
+                    (m.activity as any)!.published = new Date((m.activity as any)!.published)
+                    return m.activity
+                })
             }
         },
         invitations: async (_, args, __)=>{
@@ -97,7 +100,12 @@ export const queryResolver: ResolverMap = {
                 return acc
             }, [] as Array<INVITATION>)
 
-            return requestedInvitations
+            return requestedInvitations?.map(i => {
+                return {
+                    ...i,
+                    published: new Date(i.published)
+                }
+            })
 
         }
    }

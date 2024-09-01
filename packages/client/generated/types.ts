@@ -23,7 +23,7 @@ export type Accept = {
   from: Scalars['String']['output'];
   id?: Maybe<Scalars['String']['output']>;
   invitation: Scalars['String']['output'];
-  published: Scalars['Int']['output'];
+  published: Scalars['Date']['output'];
   to: Scalars['String']['output'];
 };
 
@@ -31,13 +31,13 @@ export type AcceptInput = {
   from: Scalars['String']['input'];
   id?: InputMaybe<Scalars['String']['input']>;
   invitation: Scalars['String']['input'];
-  published: Scalars['Int']['input'];
+  published: Scalars['Date']['input'];
   to: Scalars['String']['input'];
 };
 
 export type Ack = {
   __typename?: 'Ack';
-  acknowledged: Scalars['Int']['output'];
+  acknowledged: Scalars['Date']['output'];
   id?: Maybe<Scalars['String']['output']>;
   identity: Scalars['String']['output'];
   signed_signature: Scalars['String']['output'];
@@ -60,7 +60,7 @@ export type Conversation = {
 export type Delivery_Activity = {
   __typename?: 'DELIVERY_ACTIVITY';
   activity: Signed_Activity;
-  published: Scalars['Int']['output'];
+  published: Scalars['Date']['output'];
   signature: Scalars['String']['output'];
   type: Scalars['String']['output'];
 };
@@ -83,7 +83,7 @@ export type Invitation = {
   encrypted_conversation_id: Scalars['String']['output'];
   from: Scalars['String']['output'];
   id?: Maybe<Scalars['String']['output']>;
-  published: Scalars['Int']['output'];
+  published: Scalars['Date']['output'];
   to: Scalars['String']['output'];
 };
 
@@ -91,7 +91,7 @@ export type InvitationInput = {
   encrypted_conversation_id: Scalars['String']['input'];
   from: Scalars['String']['input'];
   id?: InputMaybe<Scalars['String']['input']>;
-  published: Scalars['Int']['input'];
+  published: Scalars['Date']['input'];
   to: Scalars['String']['input'];
 };
 
@@ -101,7 +101,7 @@ export type Message = {
   encrypted_content: Scalars['String']['output'];
   id?: Maybe<Scalars['String']['output']>;
   node: Scalars['String']['output'];
-  published: Scalars['Int']['output'];
+  published: Scalars['Date']['output'];
 };
 
 export type MessageInput = {
@@ -109,7 +109,7 @@ export type MessageInput = {
   encrypted_content: Scalars['String']['input'];
   id?: InputMaybe<Scalars['String']['input']>;
   node: Scalars['String']['input'];
-  published: Scalars['Int']['input'];
+  published: Scalars['Date']['input'];
 };
 
 export type Mutation = {
@@ -150,7 +150,7 @@ export type Reject = {
   from: Scalars['String']['output'];
   id?: Maybe<Scalars['String']['output']>;
   invitation: Scalars['String']['output'];
-  published: Scalars['Int']['output'];
+  published: Scalars['Date']['output'];
   to: Scalars['String']['output'];
 };
 
@@ -158,7 +158,7 @@ export type RejectInput = {
   from: Scalars['String']['input'];
   id?: InputMaybe<Scalars['String']['input']>;
   invitation: Scalars['String']['input'];
-  published: Scalars['Int']['input'];
+  published: Scalars['Date']['input'];
   to: Scalars['String']['input'];
 };
 

@@ -8,6 +8,7 @@
     "compile": "graphql-codegen --config ./config.yaml",
     "build": "rm -rf ./dist && tsup"
   },
+  "files": ["dist"],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",

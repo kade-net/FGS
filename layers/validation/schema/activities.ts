@@ -37,7 +37,7 @@ export const message = z.object({
     conversation_id: z.string(),
     encrypted_content: z.string(),
     published: z.number(),
-    node: z.string(),
+    nodes: z.array(z.string()),
 })
 
 export type MESSAGE = z.infer<typeof message>

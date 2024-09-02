@@ -108,7 +108,7 @@ export type MessageInput = {
   conversation_id: Scalars['String']['input'];
   encrypted_content: Scalars['String']['input'];
   id?: InputMaybe<Scalars['String']['input']>;
-  node: Scalars['String']['input'];
+  nodes?: InputMaybe<Array<Scalars['String']['input']>>;
   published: Scalars['Date']['input'];
 };
 
@@ -137,6 +137,7 @@ export type Query = {
 
 export type QueryConversationArgs = {
   conversation_id: Scalars['String']['input'];
+  source_nodes?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
 

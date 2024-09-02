@@ -38,7 +38,7 @@ export type MessageInput = {
     conversation_id: string;
     encrypted_content: string;
     published: number;
-    node: string;
+    nodes: string[];
 };
 
 export type SignedActivityInput = {

@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@aptos-labs/ts-sdk": "^1.27.0",
-    "client": "workspace:*",
+    "@kade-net/fgs-node-client": "workspace:*",
     "contract": "workspace:*",
     "dotenv": "^16.4.5",
     "tweetnacl": "^1.0.3",

@@ -1,0 +1,54 @@
+{
+  "name": "fgs-rn",
+  "version": "0.1.0",
+  "description": "fgs react native sdk",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "a:build": "expo-module build",
+    "c:clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "d:prepare": "expo-module prepare",
+    "d:prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module",
+    "open:ios": "xed example/ios",
+    "open:android": "open -a \"Android Studio\" example/android",
+    "android": "expo run:android",
+    "ios": "expo run:ios"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "fgs-rn",
+    "FgsRn"
+  ],
+  "repository": "https://github.com/kade-net/FGS",
+  "bugs": {
+    "url": "https://github.com/kade-net/FGS/issues"
+  },
+  "author": "porkytheblack <porkytheblack@gmail.com> (https://github.com/porkytheblack)",
+  "license": "MIT",
+  "homepage": "https://github.com/kade-net/FGS#readme",
+  "dependencies": {
+    "@aptos-labs/ts-sdk": "^1.27.0",
+    "buffer": "^6.0.3",
+    "@kade-net/fgs-node-client": "workspace:*",
+    "react-native-get-random-values": "^1.11.0",
+    "tweetnacl": "^1.0.3",
+    "tweetnacl-util": "^0.15.1",
+    "expo": "~51.0.28",
+    "react": "18.2.0",
+    "react-native": "0.74.5"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.25",
+    "expo-module-scripts": "^3.5.2",
+    "expo-modules-core": "^1.12.20"
+  },
+  "peerDependencies": {
+    "expo": "*",
+    "react": "*",
+    "react-native": "*"
+  }
+}

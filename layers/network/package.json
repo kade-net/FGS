@@ -25,7 +25,7 @@
   "dependencies": {
     "@apollo/server": "^4.11.0",
     "@graphql-tools/schema": "^10.0.6",
-    "client": "workspace:*",
+    "@kade-net/fgs-node-client": "workspace:*",
     "config": "workspace:*",
     "contract": "workspace:*",
     "cors": "^2.8.5",

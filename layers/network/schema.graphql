@@ -89,7 +89,7 @@ input MessageInput {
     conversation_id: String!
     encrypted_content: String!
     published: Date!
-    node: String!
+    nodes: [String!]
 }
 
 input SignedActivityInput {
@@ -127,7 +127,7 @@ type Mutation {
 }
 
 type Query {
-    conversation(conversation_id: String!): Conversation!
+    conversation(conversation_id: String!, source_nodes: [String]): Conversation!
     invitations(address: String, type: INVITE_TYPE): [Invitation!]
 }
 

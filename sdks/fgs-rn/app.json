@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "name": "fgs-rn",
+    "slug": "fgs-rn",
+    "version": "0.1.0",
+    "description": "fgs react native sdk",
+    "sdkVersion": "51.0.0",
+    "platforms": [
+      "ios",
+      "android"
+    ],
+    "ios": {
+      "bundleIdentifier": "com.dduke.fgs-rn"
+    }
+  }
+}

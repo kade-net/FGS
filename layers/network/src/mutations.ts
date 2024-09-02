@@ -5,6 +5,7 @@ import { getClient } from 'client'
 import db, {schema} from 'storage'
 import config from "config";
 import nacl from "tweetnacl";
+import {getNode} from "contract/functions";
 
 
 
@@ -18,7 +19,6 @@ interface ResolverMap {
 
 const submitSignedActivity: FunResolver<any, InputArg<SignedActivityInput>, any> = async (_, args, __)=>{
 
-    console.log("Data::", args.input)
     const ACTIVITY_TYPE = args.input.activity.accept ? 'accept' :
         args.input.activity.message ? 'message' :
             args.input.activity.reject ? 'reject' :
@@ -101,14 +101,14 @@ const submitSignedActivity: FunResolver<any, InputArg<SignedActivityInput>, any>
 
                     const signature = await validator.signActivity(args.input)
 
-                    await client.submitDelivery({
-                        input: {
-                            type: 'node',
-                            signature,
-                            activity: args.input,
-                            identity: config.config.namespace
-                        }
-                    })
+                    // await client.submitDelivery({
+                    //     input: {
+                    //         type: 'node',
+                    //         signature,
+                    //         activity: args.input,
+                    //         identity: config.config.namespace
+                    //     }
+                    // })
                 }
 
 
@@ -181,14 +181,14 @@ const submitSignedActivity: FunResolver<any, InputArg<SignedActivityInput>, any>
 
                     const signature = await validator.signActivity(args.input)
 
-                    await client.submitDelivery({
-                        input: {
-                            type: 'node',
-                            signature,
-                            activity: args.input,
-                            identity: config.config.namespace
-                        }
-                    })
+                    // await client.submitDelivery({
+                    //     input: {
+                    //         type: 'node',
+                    //         signature,
+                    //         activity: args.input,
+                    //         identity: config.config.namespace
+                    //     }
+                    // })
                 }
 
                 const signed_signature = nacl.sign.detached(Buffer.from(args.input.signature, 'hex'), config.config.signKeyPairDoNotExpose.secretKey)
@@ -206,11 +206,7 @@ const submitSignedActivity: FunResolver<any, InputArg<SignedActivityInput>, any>
         case "message": {
             const message =  signedActivity.activity as MESSAGE
 
-            const node = await contract.getNode(message.node)
 
-            const SAME_NODE = message.node == config.config.namespace
-
-            const client = getClient(node.protocol_endpoint)
 
             return await db.transaction(async (tx)=>{
                 const id = message?.id ?? utils.generateId('message')
@@ -228,18 +224,23 @@ const submitSignedActivity: FunResolver<any, InputArg<SignedActivityInput>, any>
 
                     const signature = await validator.signActivity(args.input)
                     args.input.activity.message!.id = id
-
-                    const ack = await client.submitDelivery({
-                        input: {
-                            type: 'node',
-                            signature,
-                            activity: args.input,
-                            identity: config.config.namespace
-                        }
-                    })
+                // remove self from node list
+                    args.input.activity.message!.nodes = args.input.activity.message!.nodes?.filter(n => n !== config.config.namespace)
 
 
+                for (const node_namespace of message.nodes){ // Fan out to other nodes and clear node list to prevent double fan out of the same message
+                    const client = getClient(node_namespace)
+                    args.input.activity!.message!.nodes = []
+                    // const ack = await client.submitDelivery({
+                    //     input: {
+                    //         type: 'node',
+                    //         signature,
+                    //         activity: args.input,
+                    //         identity: config.config.namespace
+                    //     }
+                    // })
 
+                }
 
                 const signed_signature = nacl.sign.detached(Buffer.from(args.input.signature, 'hex'), config.config.signKeyPairDoNotExpose.secretKey)
 
@@ -311,14 +312,14 @@ const submitSignedActivity: FunResolver<any, InputArg<SignedActivityInput>, any>
 
                     const signature = await validator.signActivity(args.input)
 
-                    await client.submitDelivery({
-                        input: {
-                            type: 'node',
-                            signature,
-                            activity: args.input,
-                            identity: config.config.namespace
-                        }
-                    })
+                    // await client.submitDelivery({
+                    //     input: {
+                    //         type: 'node',
+                    //         signature,
+                    //         activity: args.input,
+                    //         identity: config.config.namespace
+                    //     }
+                    // })
                 }
 
 

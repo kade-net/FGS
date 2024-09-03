@@ -48,6 +48,10 @@ export const NODE_ENTRY_FUNCTIONS = {
             args.encrypt_public_key,
             args.encrypted_private_key_set,
         ]
+    },
+    updateConversationList: {
+        path: `${INBOX_REGISTRY_MODULE}::updateConversationList` as const,
+        parseArgs: (args: {newConversationList: string}) => [args.newConversationList]
     }
 }
 

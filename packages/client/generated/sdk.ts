@@ -49,6 +49,17 @@ export const SubmitDeliveryDocument = gql`
   }
 }
     `;
+export const GetInvitationDocument = gql`
+    query getInvitation($invitation_id: String!) {
+  invitation(invitation_id: $invitation_id) {
+    id
+    to
+    from
+    published
+    encrypted_conversation_id
+  }
+}
+    `;
 
 export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string, variables?: any) => Promise<T>;
 
@@ -68,6 +79,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     submitDelivery(variables: Types.SubmitDeliveryMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<Types.SubmitDeliveryMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<Types.SubmitDeliveryMutation>(SubmitDeliveryDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'submitDelivery', 'mutation', variables);
+    },
+    getInvitation(variables: Types.GetInvitationQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<Types.GetInvitationQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<Types.GetInvitationQuery>(GetInvitationDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getInvitation', 'query', variables);
     }
   };
 }

@@ -32,14 +32,14 @@
   "homepage": "https://github.com/kade-net/FGS#readme",
   "dependencies": {
     "@aptos-labs/ts-sdk": "^1.27.0",
+    "@kade-net/fgs-node-client": "^0.0.5",
     "buffer": "^6.0.3",
-    "@kade-net/fgs-node-client": "workspace:*",
-    "react-native-get-random-values": "^1.11.0",
-    "tweetnacl": "^1.0.3",
-    "tweetnacl-util": "^0.15.1",
     "expo": "~51.0.28",
     "react": "18.2.0",
-    "react-native": "0.74.5"
+    "react-native": "0.74.5",
+    "react-native-get-random-values": "^1.11.0",
+    "tweetnacl": "^1.0.3",
+    "tweetnacl-util": "^0.15.1"
   },
   "devDependencies": {
     "@types/react": "^18.0.25",

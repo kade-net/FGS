@@ -1,4 +1,12 @@
-import {aptos, ENTRY_FUNCTIONS, FGS_NODE, INBOX, INBOX_REGISTRY_MODULE, NODE_REGISTRY_MODULE} from "./contract";
+import {
+    aptos,
+    ENTRY_FUNCTIONS,
+    FGS_NODE,
+    INBOX,
+    INBOX_REGISTRY_MODULE,
+    NODE_ENTRY_FUNCTIONS,
+    NODE_REGISTRY_MODULE
+} from "./contract";
 
 
 export const getNode = async (namespace: string) => {
@@ -12,10 +20,12 @@ export const getNode = async (namespace: string) => {
         }
     })
 
-    return await aptos.getAccountResource<FGS_NODE>({
+    const node = await aptos.getAccountResource<FGS_NODE>({
         accountAddress: node_address as string,
         resourceType: `${NODE_REGISTRY_MODULE}::Node`
     })
+
+    return node
 }
 
 export const getInbox = async (inbox_address: string) => {
@@ -26,4 +36,17 @@ export const getInbox = async (inbox_address: string) => {
     })
 
 
+}
+
+export const getUpdateConversationListTransaction = async (inbox_owner: string, args: Parameters<typeof NODE_ENTRY_FUNCTIONS.updateConversationList.parseArgs>[number]) => {
+
+    const transaction = await aptos.transaction.build.simple({
+        sender: inbox_owner,
+        data: {
+            function: NODE_ENTRY_FUNCTIONS.updateConversationList.path,
+            functionArguments: NODE_ENTRY_FUNCTIONS.updateConversationList.parseArgs(args)
+        }
+    })
+
+    return transaction
 }

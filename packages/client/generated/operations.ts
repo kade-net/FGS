@@ -28,3 +28,10 @@ export type SubmitDeliveryMutationVariables = Types.Exact<{
 
 
 export type SubmitDeliveryMutation = { __typename?: 'Mutation', submitDelivery: { __typename?: 'Ack', type: string, acknowledged: any, signed_signature: string, identity: string } };
+
+export type GetInvitationQueryVariables = Types.Exact<{
+  invitation_id: Types.Scalars['String']['input'];
+}>;
+
+
+export type GetInvitationQuery = { __typename?: 'Query', invitation: { __typename?: 'Invitation', id?: string | null, to: string, from: string, published: any, encrypted_conversation_id: string } };

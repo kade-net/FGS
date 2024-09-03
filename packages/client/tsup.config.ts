@@ -6,7 +6,7 @@ export default defineConfig((opts)=>{
         sourcemap: true,
         dts: true,
         clean: true,
-        format: ["esm"],
+        format: ["esm", "cjs"],
         ignoreWatch: [
             "**/node_modules/**",
             "**/.git/**",

@@ -129,6 +129,7 @@ type Mutation {
 type Query {
     conversation(conversation_id: String!, source_nodes: [String]): Conversation!
     invitations(address: String, type: INVITE_TYPE): [Invitation!]
+    invitation(invitation_id: String!): Invitation!
 }
 
 

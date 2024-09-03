@@ -13,6 +13,7 @@ interface ResolverMap {
     Query: {
         invitations: FunResolver<any,{address: string, type: INVITE_TYPE}, any>
         conversation: FunResolver<any, {conversation_id: string}, any>
+        invitation: FunResolver<any, {invitation_id: string}, any>
     }
 }
 
@@ -52,6 +53,9 @@ export const queryResolver: ResolverMap = {
                 orderBy: desc(schema.nodeInbox.recorded)
             })
 
+            console.log("Args ::", args)
+            console.log("Outgoing events::", outGoingEvents)
+
             const incomingEvents = await db.query.nodeInbox.findMany({
                 where(fields, ops){
                     return ops.and(
@@ -60,8 +64,7 @@ export const queryResolver: ResolverMap = {
                             ops.eq(fields.activity_type, 'accept'),
                             ops.eq(fields.activity_type, 'reject')
                         ),
-                        ops.eq(fields.activity_type, 'invite'),
-                        ops.sql`${schema.nodeOutbox.activity} ->> 'to' = ${args.address}`
+                        ops.sql`${schema.nodeInbox.activity} ->> 'to' = ${args.address}`
                     )
                 },
                 orderBy: desc(schema.nodeInbox.recorded)
@@ -107,6 +110,30 @@ export const queryResolver: ResolverMap = {
                 }
             })
 
-        }
+        },
+       invitation: async (_, args, __) => {
+            const invitation = (await db.query.nodeInbox.findFirst({
+                where(fields, ops){
+                    return ops.and(
+                        ops.eq(fields.activity_type, 'invite'),
+                        ops.eq(fields.id, args.invitation_id)
+                    )
+                }
+            })) ?? (
+                await db.query.nodeOutbox.findFirst({
+                    where(fields, ops){
+                        return ops.and(
+                            ops.eq(fields.activity_type, 'invite'),
+                            ops.eq(fields.id, args.invitation_id)
+                        )
+                    }
+                })
+            )
+
+           return {
+                ...(invitation?.activity ?? null),
+               published: (invitation?.activity as any)?.published ? new Date((invitation?.activity as any)?.published) : Date.now(),
+           }
+       }
    }
 }

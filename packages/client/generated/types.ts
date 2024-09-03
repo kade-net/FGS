@@ -131,6 +131,7 @@ export type MutationSubmitSignedActivityArgs = {
 export type Query = {
   __typename?: 'Query';
   conversation: Conversation;
+  invitation: Invitation;
   invitations?: Maybe<Array<Invitation>>;
 };
 
@@ -138,6 +139,11 @@ export type Query = {
 export type QueryConversationArgs = {
   conversation_id: Scalars['String']['input'];
   source_nodes?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+};
+
+
+export type QueryInvitationArgs = {
+  invitation_id: Scalars['String']['input'];
 };
 
 

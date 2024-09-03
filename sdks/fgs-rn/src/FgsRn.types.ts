@@ -7,7 +7,7 @@ interface KDF_CK_Result {
   ckPrime: string
   mk: string
 }
-interface FGSRNModule {
+export interface FGSRNModule {
   hello(): string
 
   count(): string
@@ -29,11 +29,11 @@ interface FGSRNModule {
   AEAD_Decrypt(key: string, encryptedMessage: string, associatedData: string): Promise<{
     valid: boolean,
     plaintext: string
-  }>
+  } | string>
 
-  EncryptFile(key: string, fileUrl: string): Promise<string>
+  EncryptFile(key: string, fileUrl: string, outputUrl?: string): Promise<string | undefined>
 
-  DecryptFile(key: string, fileUrl: string): Promise<string>
+  DecryptFile(key: string, fileUrl: string, outputUrl?: string): Promise<string | undefined>
 
 
 }

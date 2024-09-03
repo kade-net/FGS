@@ -112,7 +112,15 @@ module fgs::inbox_registry {
         });
     }
 
+    public entry fun updateConversationList(inbox_owner: &signer, newConversationList: string::String) acquires Inbox {
 
+        let owner_address = signer::address_of(inbox_owner);
+
+        let inbox = borrow_global_mut<Inbox>(owner_address);
+
+        inbox.encrypted_conversation_list = newConversationList
+
+    }
 
 
 }

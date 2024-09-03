@@ -4,13 +4,14 @@ import { FGS_NODE, INBOX } from "./contract";
 import nacl, { BoxKeyPair, SignKeyPair } from "tweetnacl";
 import nacl_util from 'tweetnacl-util'
 import {
+    CONVERSATION_DELIMITER,
     CONVERSATION_HEADER,
     deserialize_conversation_header,
     deserialize_serialized_key_set, deserializeMessage, generate_conversation_header,
     generate_random_auth_string,
     generate_serialized_key_set, MESSAGE, serializeMessage
 } from "./serde";
-import { AcceptInput, getClient, InvitationInput, MessageInput, RejectInput, SignedActivityInput } from "client";
+import { AcceptInput, getClient, InvitationInput, MessageInput, RejectInput, SignedActivityInput, Invite_Type } from "@kade-net/fgs-node-client";
 import fgsRnModule from "../build/FgsRnModule";
 
 interface ClientInitOptions {
@@ -37,6 +38,7 @@ export class Client {
     encryptionKeyPair: BoxKeyPair
     signKeyPair: BoxKeyPair
     private secretSignature: string
+    nodeClient: ReturnType<typeof getClient>
 
     constructor(onChainInbox: INBOX, onChainNode: FGS_NODE, box: BoxKeyPair, sign: SignKeyPair, secretSignature: string, conversationList: Array<CONVERSATION_HEADER>, owner: string) {
         this.onChainNode = onChainNode
@@ -46,6 +48,7 @@ export class Client {
         this.encryptionKeyPair = box
         this.signKeyPair = sign
         this.owner = owner
+        this.nodeClient = getClient(onChainNode.protocol_endpoint)
     }
 
     static async getAuthString(address: string) {
@@ -63,7 +66,7 @@ export class Client {
         const nonce = key_set_serialized.subarray(0, nacl.secretbox.nonceLength)
         const keys = key_set_serialized.subarray(nacl.secretbox.nonceLength)
 
-        const unencrypted = nacl.secretbox.open(keys, nonce, Buffer.from(options.secret_signature, 'hex'))
+        const unencrypted = nacl.secretbox.open(keys, nonce, Buffer.from(options.secret_signature, 'hex').slice(0,32))
 
         if (!unencrypted) {
             throw new Error("Unencrypted encryption key")
@@ -79,12 +82,25 @@ export class Client {
             Buffer.from(keyData.signing_key, 'hex')
         )
 
+        if(inbox.encrypted_conversation_list?.trim()?.length == 0){
+
+            return new Client(
+                inbox,
+                node,
+                boxKey,
+                signKey,
+                options.secret_signature,
+                [],
+                options.inbox_address
+            )
+        }
+
         const conversationList = Buffer.from(
             inbox.encrypted_conversation_list,
             'hex'
         )
 
-        const nonceData = conversationList.subarray(0, nacl.secretbox.length)
+        const nonceData = conversationList.subarray(0, nacl.secretbox.nonceLength)
         const list = conversationList.subarray(nacl.secretbox.nonceLength)
 
         const unencryptedConversationList = nacl.secretbox.open(list, nonceData, boxKey.secretKey)
@@ -93,10 +109,8 @@ export class Client {
         const convList = !unencryptedConversationList ? "" : Buffer.from(unencryptedConversationList).toString('utf-8')
 
         const conversations = convList.split(
-            "---\n" // TODO: document this
-        )?.map(c => deserialize_conversation_header(c))
-
-
+            CONVERSATION_DELIMITER // TODO: document this
+        )?.filter(c => (c?.trim()?.length ?? 0) > 0  )?.map(c => deserialize_conversation_header(c))
 
         return new Client(
             inbox,
@@ -150,12 +164,9 @@ export class Client {
 
     }
 
-
-
     async conversation(conversation_id: string) {
 
         const conversation_header = this.conversationList.find(c => c.conversation_id == conversation_id)
-
         if (!conversation_header) {
             return null
         }
@@ -174,8 +185,40 @@ export class Client {
         )
     }
 
+    async loadInvites(type?: Invite_Type){
+        const invitesResponse = await this.nodeClient.getInvitations({
+            address: this.owner,
+            type
+        })
 
+        return invitesResponse?.invitations
+    }
 
+    async getNewEncryptedConversationList(new_conversation_header: string){
+
+        const headerList = this.conversationList.map(c => generate_conversation_header({
+            participants: c.participants,
+            conversation_id: c.conversation_id,
+            secret_key: c.conversation_key,
+            originator: c.originator
+        })).join(CONVERSATION_DELIMITER)
+
+        const newConversationList = headerList + CONVERSATION_DELIMITER + new_conversation_header
+
+        const nonce = nacl.randomBytes(nacl.secretbox.nonceLength)
+        const encryptedList = nacl.secretbox(
+            Buffer.from(newConversationList, 'utf-8'),
+            nonce,
+            this.encryptionKeyPair.secretKey
+        )
+
+        const combined = new Uint8Array(nonce.length + encryptedList.length)
+        combined.set(nonce)
+        combined.set(encryptedList)
+
+        return Buffer.from(combined).toString('hex')
+
+    }
 
 
 }
@@ -227,7 +270,7 @@ export class Conversation {
     }
 
     async encryptFile(file_url: string) {
-        const new_url = await fgsRnModule.EncryptFile(
+        const new_url: string = await fgsRnModule.EncryptFile(
             this.header.conversation_key,
             file_url,
         )
@@ -257,10 +300,10 @@ export class Conversation {
         )
 
         const messageInput: MessageInput = {
-            nodes: this.nodes,
             conversation_id: this.header.conversation_id,
+            encrypted_content: encryptedMessageContent,
             published: Date.now(),
-            encrypted_content: encryptedMessageContent
+            nodes: this.nodes,
         }
 
         const signature = nacl.sign.detached(
@@ -308,7 +351,7 @@ export class Conversation {
 
             const sharedSecret = nacl.box.before(
                 Buffer.from(participant.inbox.encrypt_public_key, 'hex'),
-                client.encryptionKeyPair.secretKey
+                client.encryptionKeyPair.secretKey.subarray(0,32)
             )
 
             const nonce = nacl.randomBytes(nacl.secretbox.nonceLength)
@@ -319,11 +362,16 @@ export class Conversation {
                 sharedSecret
             )
 
+            const combined = new Uint8Array(nacl.secretbox.nonceLength + encryptedConversation.length)
+            combined.set(nonce)
+            combined.set(encryptedConversation,nacl.secretbox.nonceLength)
+
+
             const invitation: InvitationInput = {
                 to: participant.address,
                 from: client.owner,
                 published: Date.now(),
-                encrypted_conversation_id: Buffer.from(encryptedConversation).toString('hex')
+                encrypted_conversation_id: Buffer.from(combined).toString('hex')
             }
 
             const signature = nacl.sign.detached(
@@ -347,18 +395,63 @@ export class Conversation {
 
         }
 
+        const nonce = nacl.randomBytes(nacl.secretbox.nonceLength)
+        const prevConversationList = client.conversationList?.map(c=>generate_conversation_header({
+            participants: c.participants,
+            originator: c.originator,
+            conversation_id: c.conversation_id,
+            secret_key: c.conversation_key
+        }))?.join(CONVERSATION_DELIMITER)
+
+        const newConversationList = prevConversationList + CONVERSATION_DELIMITER + conversation_header
+
+        const encryptedConversationList = nacl.secretbox(Buffer.from(newConversationList, 'utf-8'), nonce, client.encryptionKeyPair.secretKey)
+        const combined = new Uint8Array(nonce.length + encryptedConversationList.length)
+
+        combined.set(nonce)
+        combined.set(encryptedConversationList, nonce.length)
+
         // !!! USER WILL NEED TO SUBMIT THIS ON-CHAIN
-        return conversation_header
+        return Buffer.from(combined).toString('hex')
 
     }
 
 
-    static async acceptInvite(client: Client, args: { invitation_id: string, initiator: string }) {
+    static async acceptInvite(client: Client, args: { invitation_id: string }) {
+
+        const invitation = await client.nodeClient.getInvitation({
+            invitation_id: args.invitation_id
+        })
+
+        const initiator = await getInbox(invitation.invitation.from)
+
+        const combinedEncryptedConversationId = Buffer.from(invitation.invitation.encrypted_conversation_id, 'hex')
+
+        const shared_secret = nacl.box.before(
+            Buffer.from(initiator.encrypt_public_key, 'hex'),
+            client.encryptionKeyPair.secretKey.subarray(0,32)
+        )
+
+
+        const nonce = combinedEncryptedConversationId.subarray(0, nacl.secretbox.nonceLength)
+        const data = combinedEncryptedConversationId.subarray(nacl.secretbox.nonceLength)
+
+        const decrypted = nacl.secretbox.open(
+            data,
+            nonce,
+            shared_secret
+        )
+
+        if(!decrypted){
+            throw new Error("No conversation header found")
+        }
+
+        const serialized_conversation_header = Buffer.from(decrypted).toString('utf-8')
 
         const confirmation: AcceptInput = {
-            invitation: args.invitation_id,
+            to: invitation.invitation.from,
             from: client.owner,
-            to: args.initiator,
+            invitation: args.invitation_id,
             published: Date.now()
         }
 
@@ -378,14 +471,20 @@ export class Conversation {
             }
         })
 
+        return serialized_conversation_header
     }
 
-    static async rejectInvite(client: Client, args: { invitation_id: string, initiator: string }) {
+    static async rejectInvite(client: Client, args: { invitation_id: string }) {
+
+        const invitation = await client.nodeClient.getInvitation({
+            invitation_id: args.invitation_id
+        })
+        const initiator = await getInbox(invitation.invitation.from)
 
         const rejection: RejectInput = {
-            invitation: args.invitation_id,
+            to: invitation.invitation.from,
             from: client.owner,
-            to: args.initiator,
+            invitation: args.invitation_id,
             published: Date.now()
         }
 
@@ -405,7 +504,8 @@ export class Conversation {
             }
         })
 
-    }
+        return ack
 
+    }
 
 }

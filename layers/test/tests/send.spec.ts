@@ -5,7 +5,7 @@ import nacl, {BoxKeyPair, SignKeyPair} from "tweetnacl";
 import nacl_util from 'tweetnacl-util'
 import {aptos} from "contract";
 import {INVITATION, validator} from "validation";
-import {getClient} from "client";
+import {getClient} from "@kade-net/fgs-node-client";
 
 interface UserAccount {
     account: Account

@@ -1,6 +1,7 @@
 import nacl from 'tweetnacl'
 import {Buffer} from 'buffer'
 
+export const CONVERSATION_DELIMITER = "\n---\n" as const;
 interface generate_random_auth_string_args {
     timestamp?: number
     rand?: string
@@ -40,9 +41,8 @@ export function generate_serialized_key_set(args: key_set_args) {
 
 export function deserialize_serialized_key_set(serialized: string) {
     const [_, signer, encryption] = serialized.split("\n")
-
     const signing_key = signer.trim().replace("SIGNING_KEY::", "").trim()
-    const encryption_key = signer.trim().replace("ENCRYPTION_KEY::", "").trim()
+    const encryption_key = encryption.trim().replace("ENCRYPTION_KEY::", "").trim()
 
     return {
         signing_key,
@@ -53,12 +53,13 @@ export function deserialize_serialized_key_set(serialized: string) {
 interface generate_conversation_header_args {
     originator: string
     participants: string[]
-    originator_node: string
-
+    originator_node?: string
+    conversation_id?: string
+    secret_key?: string
 }
 export function generate_conversation_header(args: generate_conversation_header_args){
-    const randomInviteId = `fgs://${args.originator_node}:conversation:` + Buffer.from(nacl.randomBytes(16)).toString('hex')
-    const randomSenderKey = Buffer.from(nacl.randomBytes(32)).toString('hex')
+    const randomInviteId = args?.conversation_id ?? `fgs://${args.originator_node}:conversation:` + Buffer.from(nacl.randomBytes(16)).toString('hex')
+    const randomSenderKey = args?.secret_key ??  Buffer.from(nacl.randomBytes(32)).toString('hex')
 
     return (
         "FGS CONVERSATION\n" +
@@ -119,7 +120,7 @@ export interface MESSAGE {
     content: string
     attachments: Array<ATTACHMENT>
     id?: string
-    parent: string
+    parent?: string
     type: MESSAGE_TYPE
     timestamp?: number
     originator: string
@@ -145,6 +146,7 @@ export function serializeMessage(args: {message: MESSAGE}) {
         `${delimiter}\n`+
         `${args.message.attachments?.map(a => `${a.TYPE} ${a.SIZE} ${a.uri}`).join('\n')}`
     )
+    // TODO: embed message signature to prevent tampering
 }
 
 export function deserializeMessage(message: string) {

@@ -3,7 +3,7 @@ import nacl from 'tweetnacl'
 import {Account} from "@aptos-labs/ts-sdk";
 import {serde} from "validation";
 import {aptos, contract} from "contract";
-import {getClient} from "client";
+import {getClient} from "@kade-net/fgs-node-client";
 
 
 describe("FGS PARTICIPANT REGISTRATION", ()=> {

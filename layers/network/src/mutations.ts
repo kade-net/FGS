@@ -1,7 +1,7 @@
 import {DeliveryActivityInput, FunResolver, InputArg, SignedActivityInput} from "./types";
 import { contract } from 'contract'
 import {ACCEPT, INVITATION, MESSAGE, REJECT, SIGNED_ACTIVITY, utils, validator} from "validation";
-import { getClient } from 'client'
+import { getClient } from '@kade-net/fgs-node-client'
 import db, {schema} from 'storage'
 import config from "config";
 import nacl from "tweetnacl";
@@ -86,6 +86,14 @@ const submitSignedActivity: FunResolver<any, InputArg<SignedActivityInput>, any>
                         id
                     })
 
+                    await tx.insert(schema.nodeOutbox).values({
+                        activity: accept,
+                        activity_type: 'accept',
+                        signature: signedActivity.signature,
+                        id,
+                        originator: accept.from,
+                        originator_type: 'user'
+                    })
                 }else{
 
                     await tx.insert(schema.nodeOutbox).values({
@@ -101,14 +109,14 @@ const submitSignedActivity: FunResolver<any, InputArg<SignedActivityInput>, any>
 
                     const signature = await validator.signActivity(args.input)
 
-                    // await client.submitDelivery({
-                    //     input: {
-                    //         type: 'node',
-                    //         signature,
-                    //         activity: args.input,
-                    //         identity: config.config.namespace
-                    //     }
-                    // })
+                    await client.submitDelivery({
+                        input: {
+                            type: 'node',
+                            signature,
+                            activity: args.input,
+                            identity: config.config.namespace
+                        }
+                    })
                 }
 
 
@@ -166,6 +174,15 @@ const submitSignedActivity: FunResolver<any, InputArg<SignedActivityInput>, any>
                         id
                     })
 
+                    await tx.insert(schema.nodeOutbox).values({
+                        activity: reject,
+                        activity_type: 'reject',
+                        signature: signedActivity.signature,
+                        id,
+                        originator: reject.from,
+                        originator_type: 'user'
+                    })
+
                 }else{
 
                     await tx.insert(schema.nodeOutbox).values({
@@ -181,14 +198,14 @@ const submitSignedActivity: FunResolver<any, InputArg<SignedActivityInput>, any>
 
                     const signature = await validator.signActivity(args.input)
 
-                    // await client.submitDelivery({
-                    //     input: {
-                    //         type: 'node',
-                    //         signature,
-                    //         activity: args.input,
-                    //         identity: config.config.namespace
-                    //     }
-                    // })
+                    await client.submitDelivery({
+                        input: {
+                            type: 'node',
+                            signature,
+                            activity: args.input,
+                            identity: config.config.namespace
+                        }
+                    })
                 }
 
                 const signed_signature = nacl.sign.detached(Buffer.from(args.input.signature, 'hex'), config.config.signKeyPairDoNotExpose.secretKey)
@@ -231,14 +248,14 @@ const submitSignedActivity: FunResolver<any, InputArg<SignedActivityInput>, any>
                 for (const node_namespace of message.nodes){ // Fan out to other nodes and clear node list to prevent double fan out of the same message
                     const client = getClient(node_namespace)
                     args.input.activity!.message!.nodes = []
-                    // const ack = await client.submitDelivery({
-                    //     input: {
-                    //         type: 'node',
-                    //         signature,
-                    //         activity: args.input,
-                    //         identity: config.config.namespace
-                    //     }
-                    // })
+                    const ack = await client.submitDelivery({
+                        input: {
+                            type: 'node',
+                            signature,
+                            activity: args.input,
+                            identity: config.config.namespace
+                        }
+                    })
 
                 }
 
@@ -297,6 +314,15 @@ const submitSignedActivity: FunResolver<any, InputArg<SignedActivityInput>, any>
                         id
                     })
 
+                    await tx.insert(schema.nodeOutbox).values({
+                        activity: invitation,
+                        activity_type: 'invite',
+                        signature: signedActivity.signature,
+                        id,
+                        originator: invitation.from,
+                        originator_type: 'user'
+                    })
+
                 }else{
 
                     await tx.insert(schema.nodeOutbox).values({
@@ -312,14 +338,14 @@ const submitSignedActivity: FunResolver<any, InputArg<SignedActivityInput>, any>
 
                     const signature = await validator.signActivity(args.input)
 
-                    // await client.submitDelivery({
-                    //     input: {
-                    //         type: 'node',
-                    //         signature,
-                    //         activity: args.input,
-                    //         identity: config.config.namespace
-                    //     }
-                    // })
+                    await client.submitDelivery({
+                        input: {
+                            type: 'node',
+                            signature,
+                            activity: args.input,
+                            identity: config.config.namespace
+                        }
+                    })
                 }
 
 

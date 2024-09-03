@@ -1,17 +1,17 @@
 {
   "name": "@kade-net/fgs-node-client",
-  "version": "0.0.1",
+  "version": "0.0.5",
   "description": "",
-  "main": "index.js",
   "type": "module",
   "scripts": {
     "compile": "graphql-codegen --config ./config.yaml",
     "build": "rm -rf ./dist && tsup"
   },
-  "files": ["dist"],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
       "default": "./dist/index.js"
     }
   },

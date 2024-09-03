@@ -41,3 +41,13 @@ mutation submitDelivery($input: DeliveryActivityInput!) {
         identity
     }
 }
+
+query getInvitation($invitation_id: String!) {
+    invitation(invitation_id: $invitation_id) {
+        id
+        to
+        from
+        published
+        encrypted_conversation_id
+    }
+}

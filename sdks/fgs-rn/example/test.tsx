@@ -1,4 +1,4 @@
-import { View, Text, Button } from 'react-native'
+import { View, Text, Button, Image } from 'react-native'
 import React from 'react'
 import nacl from 'tweetnacl'
 import fgs from 'fgs-rn'
@@ -24,27 +24,26 @@ const TestEncDec = () => {
     const handleAssetEncryptDecrypt = async () => {
         const key = nacl.randomBytes(32)
         const keyAsString = Buffer.from(key).toString('hex')
-
+        const p = await ImagePicker.requestMediaLibraryPermissionsAsync()
+        p.status !== 'granted' && console.log("Permission not granted")
         const result = await ImagePicker.launchImageLibraryAsync({
         })
 
         const mainAsset = result.assets![0]
 
-        const encryptedUrl = mainAsset.uri + ".encrypted"
-
         console.log("main asset::", mainAsset.uri)
-        console.log("encrypted url::", encryptedUrl)
         console.log("key::", keyAsString)
-        await fgs.EncryptFile(keyAsString, mainAsset.uri, encryptedUrl)
+        const encryptedFile = await fgs.EncryptFile(keyAsString, mainAsset.uri)
+        console.log("encrypted file::", encryptedFile)
+        // console.log("encrypted url::", encryptedUrl)
 
-        console.log("encrypted url::", encryptedUrl)
+        // const decryptedUrl = mainAsset.uri?.replace('.png', 'cool-stuff.png')
 
-        const decryptedUrl = mainAsset.uri?.replace('.png', 'cool-stuff.png')
+        const decrypted = await fgs.DecryptFile(keyAsString, encryptedFile)
 
-        await fgs.DecryptFile(keyAsString, encryptedUrl, decryptedUrl)
+        console.log("decrypted url::", decrypted)
 
-        console.log("decrypted url::", decryptedUrl)
-
+        setDecrypted(decrypted)
     }
 
     return (
@@ -63,6 +62,17 @@ const TestEncDec = () => {
                 title="Basic Encrypt Decrypt File"
                 onPress={handleAssetEncryptDecrypt}
             />
+            {
+                decrypted && <Image
+                    source={{
+                        uri: decrypted
+                    }}
+                    style={{
+                        width: 200,
+                        height: 200
+                    }}
+                />
+            }
         </View>
     )
 }

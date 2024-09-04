@@ -31,9 +31,9 @@ export interface FGSRNModule {
     plaintext: string
   } | string>
 
-  EncryptFile(key: string, fileUrl: string, outputUrl?: string): Promise<string | undefined>
+  EncryptFile(key: string, fileUrl: string): Promise<string>
 
-  DecryptFile(key: string, fileUrl: string, outputUrl?: string): Promise<string | undefined>
+  DecryptFile(key: string, fileUrl: string): Promise<string>
 
 
 }

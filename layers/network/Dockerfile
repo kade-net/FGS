@@ -4,7 +4,7 @@ RUN npm i -g pnpm
 RUN pnpm --filter network --prod deploy network
 RUN ls -la
 
-FROM --platform=linux/amd64 node:18-alpine
+FROM --platform=linux/arm64 node:18-slim
 WORKDIR /app/network
 
 RUN ls -la

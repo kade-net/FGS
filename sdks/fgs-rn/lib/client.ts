@@ -238,28 +238,20 @@ export class Conversation {
     }
 
 
-    async loadConversations() {
+    async loadConversation() {
 
         const history = await this.nodeClient.getConversation({
             conversation_id: this.header.conversation_id!
         })
 
         const decryptedMessages = (await Promise.all(history.conversation?.messages!?.map(async (_message) => {
-            const { valid, plaintext } = await fgsRnModule.AEAD_Decrypt(
+            const decrypted = await fgsRnModule.AEAD_Decrypt(
                 this.header.conversation_key,
                 _message?.encrypted_content,
                 Buffer.from(new Uint8Array()).toString('hex')
             )
 
-            if (!valid) {
-                return null
-            }
-
-            const message = deserializeMessage(plaintext)
-
-
-            // TODO: attachments can get decrypted while displaying the chat to the user
-            return message
+            return deserializeMessage(decrypted?.plaintext ?? decrypted ?? "")
 
         })))?.filter(a => a !== null)
 

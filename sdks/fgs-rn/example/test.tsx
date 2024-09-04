@@ -8,17 +8,20 @@ const TestEncDec = () => {
     const [decrypted, setDecrypted] = React.useState<string | null>(null)
     const handleBasicEncryptDecrypt = async () => {
         const key = nacl.randomBytes(32)
-        const encryptionKey = Buffer.from(key).toString('hex')
+        const encryptionKey = '01049eb7881c9bdf2fa44532ed7914396b918e1f68f9517ed4146dd42771183a'
 
         const plaintext = 'hello world'
-
-        const ciphertext = await fgs.AEAD_Encrypt(encryptionKey, plaintext, "")
-
-        console.log("ciphertext::", ciphertext)
-
-        const decrepted = await fgs.AEAD_Decrypt(encryptionKey, ciphertext, "")
-
-        console.log("decrypted::", decrepted)
+        //
+        // const ciphertext = await fgs.AEAD_Encrypt(encryptionKey, plaintext, Buffer.from(new Uint8Array()).toString('hex'))
+        //
+        const ciphertext = '9d27f284e11eb4fc78d9fb801e8a3f5865114eec3dfb7f67469e7fa6d8a579d469092934323efe';
+        console.log("Current cipher::", ciphertext)
+        // const ciphertext = "e07879c13a711b539f171a93f5ae9015201b05e0d16cbc984a22995c"
+        //
+        //
+        const decrypted = await fgs.AEAD_Decrypt(encryptionKey, ciphertext, Buffer.from(new Uint8Array()).toString('hex'))
+        //
+        console.log("decrypted::", decrypted)
     }
 
     const handleAssetEncryptDecrypt = async () => {
@@ -40,8 +43,6 @@ const TestEncDec = () => {
         // const decryptedUrl = mainAsset.uri?.replace('.png', 'cool-stuff.png')
 
         const decrypted = await fgs.DecryptFile(keyAsString, encryptedFile)
-
-        console.log("decrypted url::", decrypted)
 
         setDecrypted(decrypted)
     }

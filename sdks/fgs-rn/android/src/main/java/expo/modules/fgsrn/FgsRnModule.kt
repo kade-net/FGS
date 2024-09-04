@@ -184,17 +184,17 @@ class FgsRnModule : Module() {
     Name("FgsRn")
 
     AsyncFunction("AEAD_Encrypt"){key: String, plaintext: String, associatedData: String ->
-      val key = SecretKeySpec(key.hexStringToByteArray(), "AES")
+      val ekey = key.hexStringToByteArray()
       val plaintext = plaintext.toByteArrayUTF8()
-      val cipher = AESUtils.encrypt(plaintext, key)
-      return@AsyncFunction cipher.toHexString()
+      val result = AESUtils.AEAD_Encrypt(ekey,plaintext)
+      return@AsyncFunction result!!.ciphertext.toHexString()
     }
 
     AsyncFunction("AEAD_Decrypt"){key: String, encrypted: String, associatedData: String ->
-      val key = SecretKeySpec(key.hexStringToByteArray(), "AES")
+      val dkey = key.hexStringToByteArray()
       val encrypted = encrypted.hexStringToByteArray()
-      val plaintext = AESUtils.decrypt(encrypted, key)
-      return@AsyncFunction plaintext.toStringUTF8()
+      val result = AESUtils.AEAD_Decrypt(dkey, encrypted)
+      return@AsyncFunction result!!.plaintext.toStringUTF8()
     }
  
     AsyncFunction("EncryptFile") {keyHex: String, fileUri: String  ->
@@ -202,12 +202,12 @@ class FgsRnModule : Module() {
       ensurePermission(inputUri, Permission.READ)
       val inputFile = inputUri.toFile()
 
-      val key = SecretKeySpec(keyHex.hexStringToByteArray(), "AES")
+      val key = keyHex.hexStringToByteArray()
 
       val plaintext = inputFile.readBytes()
-      val encryptedData = AESUtils.encrypt(plaintext, key)
+      val encryptedData = AESUtils.AEAD_Encrypt(key,plaintext)
 
-      val encryptedFileUri = createEncryptedFile(context, inputFile, encryptedData)
+      val encryptedFileUri = createEncryptedFile(context, inputFile, encryptedData!!.ciphertext)
 
       return@AsyncFunction encryptedFileUri.toString()
     }
@@ -217,12 +217,12 @@ class FgsRnModule : Module() {
       ensurePermission(inputUri, Permission.READ)
       val inputFile = inputUri.toFile()
 
-      val key = SecretKeySpec(key.hexStringToByteArray(), "AES")
+      val dkey = key.hexStringToByteArray()
 
       val ciphertext = inputFile.readBytes()
-      val plaintext = AESUtils.decrypt(ciphertext, key)
+      val result = AESUtils.AEAD_Decrypt(dkey, ciphertext)
 
-      val decryptedFileUri = createDecryptedFile(context, inputFile, plaintext)
+      val decryptedFileUri = createDecryptedFile(context, inputFile, result!!.plaintext)
 
       return@AsyncFunction decryptedFileUri.toString()
     }

@@ -42,87 +42,11 @@ public class FgsRnModule: Module {
       "PI": Double.pi
     ])
 
-        AsyncFunction("hkdfExtract") { (salt: String, ikm: String, hashAlgo: String) in
-            let saltData = Data(hexString: salt)
-            let ikmData = Data(hexString: ikm)
-            let result = DoubleRatchetUtils.hkdfExtract(salt: saltData, ikm: ikmData, hashAlgo: hashAlgo)
-            return result?.hexEncodedString()
-        }
-
-        AsyncFunction("KDF_RK"){ (rk: String, dhOut: String) in
-
-            let rkData = Data(hexString: rk)
-            let dhOutData = Data(hexString: dhOut)
-            let result = DoubleRatchetUtils.KDF_RK(rk: rkData, dhOut: dhOutData)
-            let rk = result?.0.hexEncodedString()
-            let cks = result?.1.hexEncodedString()
-            let dict: [String : String?] = [
-              "rk": rk,
-              "ck": cks
-            ]
-            return dict
-        }
-
-        Function("KDF_RKSync"){ (rk: String, dhOut: String) in
-            let rkData = Data(hexString: rk)
-            let dhOutData = Data(hexString: dhOut)
-
-            let result = DoubleRatchetUtils.KDF_RK(rk: rkData, dhOut: dhOutData)
-            let rk = result?.0.hexEncodedString()
-            let cks = result?.1.hexEncodedString()
-            let dict: [String : String?] = [
-              "rk": rk,
-              "ck": cks
-            ]
-            return dict
-        }
-
-        AsyncFunction("DH") {(privateKey: String, publicKey: String, dhPub: String) in
-            let privateKeyData = Data(hexString: privateKey)
-            let publicKeyData = Data(hexString: publicKey)
-            let dhPubData = Data(hexString: dhPub)
-            let result = DoubleRatchetUtils.DH(dhPair: (privateKey: privateKeyData, publicKey: publicKeyData), dhPub: dhPubData)
-            return result?.hexEncodedString()
-        }
-
-        Function("DHSync"){(privateKey: String, publicKey: String, dhPub: String) in
-            let privateKeyData = Data(hexString: privateKey)
-            let publicKeyData = Data(hexString: publicKey)
-            let dhPubData = Data(hexString: dhPub)
-            let result = DoubleRatchetUtils.DH(dhPair: (privateKey: privateKeyData, publicKey: publicKeyData), dhPub: dhPubData)
-            print("Result::\(result!)")
-            return result?.hexEncodedString()
-        }
-
-        AsyncFunction("KDF_CK"){(ck: String) in
-            let ckData = Data(hexString: ck)
-            let result = DoubleRatchetUtils.KDF_CK(ck: ckData)
-            let ckPrime = result.ckPrime.hexEncodedString()
-            let mk = result.mk.hexEncodedString()
-            let dict: [String : String?] = [
-              "ckPrime": ckPrime,
-              "mk": mk
-            ]
-            return dict
-        }
-
-        Function("KDF_CKSync"){(ck: String) in
-            let ckData = Data(hexString: ck)
-            let result = DoubleRatchetUtils.KDF_CK(ck: ckData)
-            let ckPrime = result.ckPrime.hexEncodedString()
-            let mk = result.mk.hexEncodedString()
-            let dict: [String : String?] = [
-              "ckPrime": ckPrime,
-              "mk": mk
-            ]
-            return dict
-        }
-
         AsyncFunction("AEAD_Encrypt"){(key: String, plaintext: String, associatedData: String) in
             let keyData = Data(hexString: key)
-            let plaintextData = Data(hexString: plaintext)
+            let plaintextData = plaintext.data(using: .utf8)!
             let associatedDataData = Data(hexString: associatedData)
-            let result = DoubleRatchetUtils.AEAD_Encrypt(key: keyData, plaintext: plaintextData, associatedData: associatedDataData)
+            let result = AESUtils.AEAD_Encrypt(key: keyData, plaintext: plaintextData, associatedData: associatedDataData)
             return result?.ciphertext.hexEncodedString()
         }
 
@@ -130,7 +54,7 @@ public class FgsRnModule: Module {
             let keyData = Data(hexString: key)
             let encryptedMessageData = Data(hexString: encryptedMessage)
             let associatedDataData = Data(hexString: associatedData)
-            guard let result = DoubleRatchetUtils.AEAD_Decrypt(key: keyData, encryptedMessage: encryptedMessageData, associatedData: associatedDataData) else {
+            guard let result = AESUtils.AEAD_Decrypt(key: keyData, encryptedMessage: encryptedMessageData, associatedData: associatedDataData) else {
               let dict: [String : Any?] = [
                 "valid": false,
                 "plaintext": ""
@@ -139,7 +63,7 @@ public class FgsRnModule: Module {
             }
             let dict: [String : Any?] = [
               "valid": result.valid,
-              "plaintext": result.plaintext.hexEncodedString()
+              "plaintext": String(data: result.plaintext, encoding: .utf8)
             ]
             return dict
         }
@@ -149,7 +73,7 @@ public class FgsRnModule: Module {
             try ensurePathPermission(appContext, path: fileUrl.path, flag: .read)
 
             let keyData = Data(hexString: key)
-            let encryptedFileUrl = DoubleRatchetUtils.EncryptFile(key: keyData, fileUrl: fileUrl)
+            let encryptedFileUrl = AESUtils.EncryptFile(key: keyData, fileUrl: fileUrl)
 
             return encryptedFileUrl
 
@@ -159,7 +83,7 @@ public class FgsRnModule: Module {
               try ensurePathPermission(appContext, path: fileUrl.path, flag: .read)
 
               let keyData = Data(hexString: key)
-              let decryptedFileUrl = DoubleRatchetUtils.DecryptFile(key: keyData, fileUrl: fileUrl)
+              let decryptedFileUrl = AESUtils.DecryptFile(key: keyData, fileUrl: fileUrl)
 
               return decryptedFileUrl
         }

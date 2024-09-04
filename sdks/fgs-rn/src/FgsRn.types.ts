@@ -29,7 +29,7 @@ export interface FGSRNModule {
   AEAD_Decrypt(key: string, encryptedMessage: string, associatedData: string): Promise<{
     valid: boolean,
     plaintext: string
-  } | string>
+  }|string>
 
   EncryptFile(key: string, fileUrl: string): Promise<string>
 

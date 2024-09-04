@@ -1,5 +1,5 @@
 {
-  "name": "fgs-rn",
+  "name": "@kade-net/fgs-rn",
   "version": "0.1.0",
   "description": "fgs react native sdk",
   "main": "build/index.js",

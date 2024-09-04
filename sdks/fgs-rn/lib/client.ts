@@ -12,7 +12,9 @@ import {
     generate_serialized_key_set, MESSAGE, serializeMessage
 } from "./serde";
 import { AcceptInput, getClient, InvitationInput, MessageInput, RejectInput, SignedActivityInput, Invite_Type } from "@kade-net/fgs-node-client";
-import fgsRnModule from "../build/FgsRnModule";
+import {requireNativeModule} from "expo-modules-core";
+import {FGSRNModule} from "../src/FgsRn.types";
+const fgsRnModule = requireNativeModule<FGSRNModule>('FgsRn');
 
 interface ClientInitOptions {
     inbox_address: string
@@ -247,11 +249,11 @@ export class Conversation {
         const decryptedMessages = (await Promise.all(history.conversation?.messages!?.map(async (_message) => {
             const decrypted = await fgsRnModule.AEAD_Decrypt(
                 this.header.conversation_key,
-                _message?.encrypted_content,
+                _message?.encrypted_content ?? '',
                 Buffer.from(new Uint8Array()).toString('hex')
             )
 
-            return deserializeMessage(decrypted?.plaintext ?? decrypted ?? "")
+            return deserializeMessage((decrypted as any)?.plaintext ?? decrypted ?? "")
 
         })))?.filter(a => a !== null)
 

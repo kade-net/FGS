@@ -173,6 +173,13 @@ module fgs::node_registry {
         // TODO: charge a network fee
     }
 
+    public entry fun update_node_endpoint(operator: &signer, newEndpoint: string::String) acquires LocalReference, Node {
+        let operator_address = signer::address_of(operator);
+        let local = borrow_global<LocalReference>(operator_address);
+        let node = borrow_global_mut<Node>(local.token_address);
+        node.protocol_endpoint = newEndpoint;
+    }
+
 
     #[view]
     public fun get_node_namespace(operator_address: address): string::String acquires LocalReference {

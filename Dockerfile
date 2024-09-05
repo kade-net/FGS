@@ -1,4 +1,4 @@
-FROM --platform=linux/arm64 node:18-slim
+FROM node:18-slim
 
 WORKDIR /app
 
@@ -11,7 +11,7 @@ COPY packages ./packages
 COPY layers ./layers
 COPY tsconfig.base.json ./
 
-RUN pnpm install --frozen-lockfile
+RUN pnpm install
 
 RUN pnpm -r build
 

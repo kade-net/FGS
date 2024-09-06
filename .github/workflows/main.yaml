@@ -61,14 +61,16 @@ jobs:
       - name: Build and publish base docker image
         uses: docker/build-push-action@v5
         with:
-          context: ../../Dockerfile
+          context: ./
+          file: ./Dockerfile
           push: true
           tags: ptheblack/fgs-base:latest
 
       - name: Build and publish node docker image
         uses: docker/build-push-action@v5
         with:
-          context: ./layers/network/Dockerfile
+          context: ./layers/network/
+          file: ./layers/network/Dockerfile
           push: true
           tags: ptheblack/fgs-node:latest
 

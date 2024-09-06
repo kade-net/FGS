@@ -1,4 +1,4 @@
-FROM 307413528731.dkr.ecr.us-east-1.amazonaws.com/kade/fgs:latest as network-prune
+FROM ptheblack/fgs-base as network-prune
 WORKDIR app/network
 RUN npm i -g pnpm
 RUN pnpm --filter network --prod deploy network

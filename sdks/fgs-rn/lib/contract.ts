@@ -67,7 +67,7 @@ export const ENTRY_FUNCTIONS = {
 }
 
 
-// TODO: change to mainnet
+
 export const aptos = new Aptos(new AptosConfig({
-    network: Network.TESTNET
+    network: Network.MAINNET
 }))

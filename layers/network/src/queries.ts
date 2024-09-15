@@ -1,4 +1,4 @@
-import {FunResolver} from "./types";
+import {FunResolver, PaginationArgs} from "./types";
 import db, {schema} from "storage";
 import {desc, sql} from "drizzle-orm";
 import {ACCEPT, INVITATION, REJECT} from "validation";
@@ -12,7 +12,7 @@ enum INVITE_TYPE {
 interface ResolverMap {
     Query: {
         invitations: FunResolver<any,{address: string, type: INVITE_TYPE}, any>
-        conversation: FunResolver<any, {conversation_id: string}, any>
+        conversation: FunResolver<any, {conversation_id: string, pagination: PaginationArgs}, any>
         invitation: FunResolver<any, {invitation_id: string}, any>
     }
 }
@@ -20,6 +20,8 @@ interface ResolverMap {
 export const queryResolver: ResolverMap = {
    Query: {
         conversation: async (_, args, __)=>{
+            const page = args.pagination.page ?? 0
+            const size = args.pagination.size ?? 20
             const messages = await db.query.nodeInbox.findMany({
                 where(fields, ops){
                     return ops.and(
@@ -27,7 +29,9 @@ export const queryResolver: ResolverMap = {
                         ops.sql`${schema.nodeInbox.activity} ->> 'conversation_id' = ${args.conversation_id}`
                     )
             },
-                orderBy: desc(schema.nodeInbox.recorded)
+                orderBy: desc(schema.nodeInbox.recorded),
+                offset: page * size,
+                limit: size
             })
 
             return {

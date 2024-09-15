@@ -125,8 +125,13 @@ type Mutation {
     submitDelivery(input: DeliveryActivityInput!): Ack!
 }
 
+input PaginationArgs {
+    page: Int!
+    size: Int!
+}
+
 type Query {
-    conversation(conversation_id: String!, source_nodes: [String]): Conversation!
+    conversation(conversation_id: String!, source_nodes: [String], pagination: PaginationArgs): Conversation!
     invitations(address: String, type: INVITE_TYPE): [Invitation!]
     invitation(invitation_id: String!): Invitation!
 }

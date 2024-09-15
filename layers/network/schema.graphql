@@ -34,7 +34,6 @@ type Message {
     conversation_id: String!
     encrypted_content: String!
     published: Date!
-    node: String!
 }
 
 type Conversation {

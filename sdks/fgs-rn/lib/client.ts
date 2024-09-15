@@ -14,6 +14,7 @@ import {
 import { AcceptInput, getClient, InvitationInput, MessageInput, RejectInput, SignedActivityInput, Invite_Type } from "@kade-net/fgs-node-client";
 import {requireNativeModule} from "expo-modules-core";
 import {FGSRNModule} from "../src/FgsRn.types";
+import {Account} from "@aptos-labs/ts-sdk";
 const fgsRnModule = requireNativeModule<FGSRNModule>('FgsRn');
 
 interface ClientInitOptions {
@@ -146,7 +147,7 @@ export class Client {
         const encrypted_key_set = nacl.secretbox(
             Buffer.from(serialized_key_set, 'utf-8'),
             nonce,
-            box.secretKey
+            Buffer.from(args.secret_signature, 'hex')
         )
 
         const combined = new Uint8Array(nonce.length + encrypted_key_set.length)
@@ -406,8 +407,10 @@ export class Conversation {
         combined.set(encryptedConversationList, nonce.length)
 
         // !!! USER WILL NEED TO SUBMIT THIS ON-CHAIN
-        return Buffer.from(combined).toString('hex')
-
+        return {
+            header: deserialize_conversation_header(conversation_header),
+            hex: Buffer.from(combined).toString('hex')
+        }
     }
 
 

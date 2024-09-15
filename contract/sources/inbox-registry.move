@@ -122,5 +122,14 @@ module fgs::inbox_registry {
 
     }
 
+    public entry fun updateInbox(inbox_owner: &signer, newRandAuthString: string::String, newEncryptedPrivateKeySet: string::String, newSignerPublicKey: string::String, newEncryptionPublicKey: string::String) acquires Inbox {
+        let inbox_address = signer::address_of(inbox_owner);
+        let inbox = borrow_global_mut<Inbox>(inbox_address);
+
+        inbox.rand_auth_string = newRandAuthString;
+        inbox.encrypted_private_key_set = newEncryptedPrivateKeySet;
+        inbox.sign_public_key = newSignerPublicKey;
+        inbox.encrypt_public_key = newEncryptionPublicKey;
+    }
 
 }

@@ -52,6 +52,20 @@ export const NODE_ENTRY_FUNCTIONS = {
     updateConversationList: {
         path: `${INBOX_REGISTRY_MODULE}::updateConversationList` as const,
         parseArgs: (args: {newConversationList: string}) => [args.newConversationList]
+    },
+    updateInbox: {
+        path: `${INBOX_REGISTRY_MODULE}::updateInbox` as const,
+        parseArgs: (args: {
+            newRandAuthString: string,
+            newEncryptedPrivateKeySet: string,
+            newSignerPublicKey: string,
+            newEncryptionPublicKey: string
+        }) => [
+            args.newRandAuthString,
+            args.newEncryptedPrivateKeySet,
+            args.newSignerPublicKey,
+            args.newEncryptionPublicKey
+        ]
     }
 }
 

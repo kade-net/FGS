@@ -20,8 +20,8 @@ interface ResolverMap {
 export const queryResolver: ResolverMap = {
    Query: {
         conversation: async (_, args, __)=>{
-            const page = args.pagination.page ?? 0
-            const size = args.pagination.size ?? 20
+            const page = args?.pagination?.page ?? 0
+            const size = args?.pagination?.size ?? 20
             const messages = await db.query.nodeInbox.findMany({
                 where(fields, ops){
                     return ops.and(

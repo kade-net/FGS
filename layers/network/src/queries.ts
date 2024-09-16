@@ -1,6 +1,6 @@
 import {FunResolver, PaginationArgs} from "./types";
 import db, {schema} from "storage";
-import {desc, sql} from "drizzle-orm";
+import {asc, desc, sql} from "drizzle-orm";
 import {ACCEPT, INVITATION, REJECT} from "validation";
 
 enum INVITE_TYPE {
@@ -29,7 +29,7 @@ export const queryResolver: ResolverMap = {
                         ops.sql`${schema.nodeInbox.activity} ->> 'conversation_id' = ${args.conversation_id}`
                     )
             },
-                orderBy: desc(schema.nodeInbox.recorded),
+                orderBy: asc(schema.nodeInbox.recorded),
                 offset: page * size,
                 limit: size
             })

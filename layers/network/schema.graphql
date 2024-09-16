@@ -126,8 +126,8 @@ type Mutation {
 }
 
 input PaginationArgs {
-    page: Int!
-    size: Int!
+    page: Int
+    size: Int
 }
 
 type Query {

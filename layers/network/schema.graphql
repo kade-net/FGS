@@ -130,8 +130,13 @@ input PaginationArgs {
     size: Int
 }
 
+enum SortOrder {
+    ASC
+    DESC
+}
+
 type Query {
-    conversation(conversation_id: String!, source_nodes: [String], pagination: PaginationArgs): Conversation!
+    conversation(conversation_id: String!, source_nodes: [String], pagination: PaginationArgs, sort: SortOrder): Conversation!
     invitations(address: String, type: INVITE_TYPE): [Invitation!]
     invitation(invitation_id: String!): Invitation!
 }

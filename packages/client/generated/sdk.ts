@@ -5,15 +5,18 @@ import gql from 'graphql-tag';
 type GraphQLClientRequestHeaders = RequestOptions['requestHeaders'];
 
 export const GetConversationDocument = gql`
-    query getConversation($conversation_id: String!) {
-  conversation(conversation_id: $conversation_id) {
+    query getConversation($conversation_id: String!, $page: Int, $size: Int, $sort: SortOrder) {
+  conversation(
+    conversation_id: $conversation_id
+    pagination: {page: $page, size: $size}
+    sort: $sort
+  ) {
     conversation_id
     messages {
       id
       conversation_id
       encrypted_content
       published
-      node
     }
   }
 }

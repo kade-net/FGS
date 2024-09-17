@@ -151,38 +151,52 @@ export function serializeMessage(args: {message: MESSAGE}) {
 
 export function deserializeMessage(message: string) {
 
+    const lines = message?.split("\n")
+
     const [
         _,
-        delimiter,
-        originator,
-        id,
-        type,
-        parent,
-        timestamp,
+        _delimiter,
+        _originator,
+        _id,
+        _type,
+        _parent,
+        _timestamp,
         ...rest
-    ] = message.split("\n")
+    ] = lines
+
+    const delimiter = _delimiter?.trim()?.split("::")?.at(1)!
+    const originator = _originator?.trim()?.split("::")?.at(1)!
+    const id = _id?.trim()?.split("::")?.at(1)!
+    const type = _type?.trim()?.split("::")?.at(1)!
+    const timestamp = _timestamp?.trim()?.split("::")?.at(1)!
+    let parent: string | undefined = _parent?.trim()?.split("::")?.at(1)!
+    parent = parent == 'undefined' ? undefined : parent
 
     const [
         __,
         content,
         attachments_serialized
-    ] = rest.join("\n").split(delimiter)
+    ] = rest?.join("\n")?.split(delimiter)
 
-    const attachments = attachments_serialized.split('\n').map(a => {
-        const [ type, size, uri ] = a.split(" ")
+    const attachments = attachments_serialized?.trim()?.split('\n')?.map(a => {
+        const [ type, size, uri ] = a?.split(" ")
+
+        if(!uri){
+            return null
+        }
 
         return {
             TYPE: type,
             SIZE: parseInt(size),
             uri: uri
         } as ATTACHMENT
-    })
+    })?.filter(a => a !== null)
 
 
     return {
         type,
         id,
-        attachments,
+        attachments: attachments ?? [],
         content,
         random_delimiter: delimiter,
         timestamp: parseInt(timestamp),

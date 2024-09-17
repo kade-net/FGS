@@ -2,10 +2,13 @@ import * as Types from './types';
 
 export type GetConversationQueryVariables = Types.Exact<{
   conversation_id: Types.Scalars['String']['input'];
+  page?: Types.InputMaybe<Types.Scalars['Int']['input']>;
+  size?: Types.InputMaybe<Types.Scalars['Int']['input']>;
+  sort?: Types.InputMaybe<Types.SortOrder>;
 }>;
 
 
-export type GetConversationQuery = { __typename?: 'Query', conversation: { __typename?: 'Conversation', conversation_id: string, messages?: Array<{ __typename?: 'Message', id?: string | null, conversation_id: string, encrypted_content: string, published: any, node: string } | null> | null } };
+export type GetConversationQuery = { __typename?: 'Query', conversation: { __typename?: 'Conversation', conversation_id: string, messages?: Array<{ __typename?: 'Message', id?: string | null, conversation_id: string, encrypted_content: string, published: any } | null> | null } };
 
 export type GetInvitationsQueryVariables = Types.Exact<{
   address: Types.Scalars['String']['input'];

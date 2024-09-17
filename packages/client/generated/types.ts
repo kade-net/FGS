@@ -100,7 +100,6 @@ export type Message = {
   conversation_id: Scalars['String']['output'];
   encrypted_content: Scalars['String']['output'];
   id?: Maybe<Scalars['String']['output']>;
-  node: Scalars['String']['output'];
   published: Scalars['Date']['output'];
 };
 
@@ -128,6 +127,11 @@ export type MutationSubmitSignedActivityArgs = {
   input: SignedActivityInput;
 };
 
+export type PaginationArgs = {
+  page?: InputMaybe<Scalars['Int']['input']>;
+  size?: InputMaybe<Scalars['Int']['input']>;
+};
+
 export type Query = {
   __typename?: 'Query';
   conversation: Conversation;
@@ -138,6 +142,8 @@ export type Query = {
 
 export type QueryConversationArgs = {
   conversation_id: Scalars['String']['input'];
+  pagination?: InputMaybe<PaginationArgs>;
+  sort?: InputMaybe<SortOrder>;
   source_nodes?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
@@ -183,3 +189,8 @@ export type SignedActivityInput = {
   signature: Scalars['String']['input'];
   type: Scalars['String']['input'];
 };
+
+export enum SortOrder {
+  Asc = 'ASC',
+  Desc = 'DESC'
+}

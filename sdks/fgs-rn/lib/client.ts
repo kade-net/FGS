@@ -11,7 +11,7 @@ import {
     generate_random_auth_string,
     generate_serialized_key_set, MESSAGE, serializeMessage
 } from "./serde";
-import { AcceptInput, getClient, InvitationInput, MessageInput, RejectInput, SignedActivityInput, Invite_Type } from "@kade-net/fgs-node-client";
+import { AcceptInput, getClient, InvitationInput, MessageInput, RejectInput, SignedActivityInput, Invite_Type, SortOrder } from "@kade-net/fgs-node-client";
 import {requireNativeModule} from "expo-modules-core";
 import {FGSRNModule} from "../src/FgsRn.types";
 import {Account} from "@aptos-labs/ts-sdk";
@@ -241,10 +241,15 @@ export class Conversation {
     }
 
 
-    async loadConversation() {
+    async loadConversation(pagination: {page: number, size: number}, sort: SortOrder) {
+
+        const { page = 0, size = 20 } = pagination
 
         const history = await this.nodeClient.getConversation({
-            conversation_id: this.header.conversation_id!
+            conversation_id: this.header.conversation_id!,
+            page,
+            size,
+            sort
         })
 
         const decryptedMessages = (await Promise.all(history.conversation?.messages!?.map(async (_message) => {

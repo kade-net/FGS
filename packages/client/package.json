@@ -1,6 +1,6 @@
 {
   "name": "@kade-net/fgs-node-client",
-  "version": "0.0.5",
+  "version": "0.0.8",
   "description": "",
   "type": "module",
   "scripts": {

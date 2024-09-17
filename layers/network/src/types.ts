@@ -6,6 +6,15 @@ export type InputArg<T> = {
     input: T
 }
 
+export type PaginationArgs = {
+    page: number
+    size: number
+}
+
+export enum SortOrder {
+    ASC = 'ASC',
+    DESC = 'DESC',
+}
 
 //
 

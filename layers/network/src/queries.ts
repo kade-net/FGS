@@ -18,7 +18,7 @@ interface ResolverMap {
     },
     Subscription: {
         conversation: {
-            subscription: FunResolver<any, {conversation_id: string}, any>
+            subscribe: FunResolver<any, {conversation_id: string}, any>
         }
     }
 }
@@ -149,7 +149,7 @@ export const queryResolver: ResolverMap = {
    },
     Subscription: {
        conversation: {
-           subscription: async (any, args, __) =>{
+           subscribe: async (any, args, __) =>{
                return conversationChannel.asyncIterator(`conversation-${args.conversation_id}`)
            }
        }

@@ -18,7 +18,6 @@ interface ResolverMap {
 }
 
 const submitSignedActivity: FunResolver<any, InputArg<SignedActivityInput>, any> = async (_, args, __)=>{
-
     const ACTIVITY_TYPE = args.input.activity.accept ? 'accept' :
         args.input.activity.message ? 'message' :
             args.input.activity.reject ? 'reject' :
@@ -246,27 +245,32 @@ const submitSignedActivity: FunResolver<any, InputArg<SignedActivityInput>, any>
 
 
                 for (const node_namespace of message.nodes){ // Fan out to other nodes and clear node list to prevent double fan out of the same message
-                    const client = getClient(node_namespace)
-                    args.input.activity!.message!.nodes = []
-                    const ack = await client.submitDelivery({
-                        input: {
-                            type: 'node',
-                            signature,
-                            activity: args.input,
-                            identity: config.config.namespace
-                        }
-                    })
+                    if(node_namespace != config.config.namespace && node_namespace) {
+                        const nodeDetails = await contract.getNode(node_namespace)
+                        const client = getClient(nodeDetails.protocol_endpoint)
+                        args.input.activity!.message!.nodes = []
+                        const ack = await client.submitDelivery({
+                            input: {
+                                type: 'node',
+                                signature,
+                                activity: args.input,
+                                identity: config.config.namespace
+                            }
+                        })
+                    }
 
                 }
 
                 const signed_signature = nacl.sign.detached(Buffer.from(args.input.signature, 'hex'), config.config.signKeyPairDoNotExpose.secretKey)
 
                 await conversationChannel.publish(`conversation-${message.conversation_id}`, {
-                    id: message.id,
-                    conversation_id: message.conversation_id,
-                    encrypted_content: message.encrypted_content,
-                    published: message.published
-                } as MESSAGE)
+                    conversation : {
+                        id: message.id,
+                        conversation_id : message.conversation_id,
+                        encrypted_content : message.encrypted_content,
+                        published : new Date(message.published)
+                    }
+                })
 
                 return {
                     type: 'message',

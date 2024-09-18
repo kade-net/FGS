@@ -150,8 +150,7 @@ export const queryResolver: ResolverMap = {
     Subscription: {
        conversation: {
            subscribe: async (_, args, __) =>{
-               console.log(args)
-               return conversationChannel.asyncIterator(`conversation-${args.conversation_id}`)
+               return conversationChannel.asyncIterator([`conversation-${args.conversation_id}`])
            }
        }
     }

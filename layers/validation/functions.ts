@@ -21,7 +21,6 @@ export const verifySignedActivity = async (signedActivity: SIGNED_ACTIVITY<any>)
     console.log("activity to sign::", signedActivity.activity);
 
     const MESSAGE_BUFFER = nacl_util.decodeUTF8(JSON.stringify(signedActivity.activity))
-    console.log("MESSAGE_BUFFER", Buffer.from(MESSAGE_BUFFER).toString('hex'))
     const SIGNATURE = Buffer.from(signedActivity.signature, 'base64')
     const PUB_KEY = Buffer.from(initiator.sign_public_key, 'hex')
 

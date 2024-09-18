@@ -194,3 +194,13 @@ export enum SortOrder {
   Asc = 'ASC',
   Desc = 'DESC'
 }
+
+export type Subscription = {
+  __typename?: 'Subscription';
+  conversation: Message;
+};
+
+
+export type SubscriptionConversationArgs = {
+  conversation_id: Scalars['String']['input'];
+};

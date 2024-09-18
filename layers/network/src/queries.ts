@@ -2,6 +2,7 @@ import {FunResolver, PaginationArgs, SortOrder} from "./types";
 import db, {schema} from "storage";
 import {asc, desc} from "drizzle-orm";
 import {ACCEPT, INVITATION, REJECT} from "validation";
+import {conversationChannel} from "./commChannel";
 
 enum INVITE_TYPE {
     PENDING = "PENDING",
@@ -14,6 +15,11 @@ interface ResolverMap {
         invitations: FunResolver<any,{address: string, type: INVITE_TYPE}, any>
         conversation: FunResolver<any, {conversation_id: string, pagination: PaginationArgs, sort: SortOrder}, any>
         invitation: FunResolver<any, {invitation_id: string}, any>
+    },
+    Subscription: {
+        conversation: {
+            subscription: FunResolver<any, {conversation_id: string}, any>
+        }
     }
 }
 
@@ -140,5 +146,12 @@ export const queryResolver: ResolverMap = {
                published: (invitation?.activity as any)?.published ? new Date((invitation?.activity as any)?.published) : Date.now(),
            }
        }
-   }
+   },
+    Subscription: {
+       conversation: {
+           subscription: async (any, args, __) =>{
+               return conversationChannel.asyncIterator(`conversation-${args.conversation_id}`)
+           }
+       }
+    }
 }

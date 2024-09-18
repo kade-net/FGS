@@ -141,5 +141,9 @@ type Query {
     invitation(invitation_id: String!): Invitation!
 }
 
+type Subscription {
+    conversation(conversation_id: String!): Message!
+}
+
 
 

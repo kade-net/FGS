@@ -1,4 +1,4 @@
-schema: https://fgs.poseidon.ac
+schema: http://localhost:4000
 overwrite: true
 documents: ./operations.graphql
 generates:

@@ -38,3 +38,10 @@ export type GetInvitationQueryVariables = Types.Exact<{
 
 
 export type GetInvitationQuery = { __typename?: 'Query', invitation: { __typename?: 'Invitation', id?: string | null, to: string, from: string, published: any, encrypted_conversation_id: string } };
+
+export type StreamConversationsSubscriptionVariables = Types.Exact<{
+  conversation_id: Types.Scalars['String']['input'];
+}>;
+
+
+export type StreamConversationsSubscription = { __typename?: 'Subscription', conversation: { __typename?: 'Message', conversation_id: string, encrypted_content: string, id?: string | null, published: any } };

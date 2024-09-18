@@ -5,7 +5,7 @@ import { getClient } from '@kade-net/fgs-node-client'
 import db, {schema} from 'storage'
 import config from "config";
 import nacl from "tweetnacl";
-import {getNode} from "contract/functions";
+import {conversationChannel} from "./commChannel";
 
 
 
@@ -260,6 +260,13 @@ const submitSignedActivity: FunResolver<any, InputArg<SignedActivityInput>, any>
                 }
 
                 const signed_signature = nacl.sign.detached(Buffer.from(args.input.signature, 'hex'), config.config.signKeyPairDoNotExpose.secretKey)
+
+                await conversationChannel.publish(`conversation-${message.conversation_id}`, {
+                    id: message.id,
+                    conversation_id: message.conversation_id,
+                    encrypted_content: message.encrypted_content,
+                    published: message.published
+                } as MESSAGE)
 
                 return {
                     type: 'message',

@@ -26,6 +26,7 @@
     "@apollo/server": "^4.11.0",
     "@graphql-tools/schema": "^10.0.6",
     "@kade-net/fgs-node-client": "workspace:*",
+    "@noble/hashes": "^1.5.0",
     "config": "workspace:*",
     "contract": "workspace:*",
     "cors": "^2.8.5",

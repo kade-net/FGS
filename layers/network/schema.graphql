@@ -137,8 +137,10 @@ enum SortOrder {
 
 type Query {
     conversation(conversation_id: String!, source_nodes: [String], pagination: PaginationArgs, sort: SortOrder): Conversation!
+    lastMessage(conversation_id: String!): Message!
     invitations(address: String, type: INVITE_TYPE): [Invitation!]
     invitation(invitation_id: String!): Invitation!
+
 }
 
 type Subscription {

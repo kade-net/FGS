@@ -1,6 +1,6 @@
 {
   "name": "@kade-net/fgs-node-client",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "",
   "type": "module",
   "scripts": {
@@ -11,8 +11,7 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
-      "require": "./dist/index.cjs",
-      "default": "./dist/index.js"
+      "require": "./dist/index.cjs"
     }
   },
   "keywords": [],

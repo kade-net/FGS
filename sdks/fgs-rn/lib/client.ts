@@ -1,4 +1,5 @@
 import { Buffer } from 'buffer';
+import { getWsClient, StreamConversationsDocument } from '@kade-net/fgs-node-client'
 import { getInbox, getNode } from "./function";
 import { FGS_NODE, INBOX } from "./contract";
 import nacl, { BoxKeyPair, SignKeyPair } from "tweetnacl";
@@ -14,7 +15,6 @@ import {
 import { AcceptInput, getClient, InvitationInput, MessageInput, RejectInput, SignedActivityInput, Invite_Type, SortOrder } from "@kade-net/fgs-node-client";
 import {requireNativeModule} from "expo-modules-core";
 import {FGSRNModule} from "../src/FgsRn.types";
-import {Account} from "@aptos-labs/ts-sdk";
 const fgsRnModule = requireNativeModule<FGSRNModule>('FgsRn');
 
 interface ClientInitOptions {
@@ -241,9 +241,15 @@ export class Conversation {
     }
 
 
-    async loadConversation(pagination: {page: number, size: number}, sort: SortOrder) {
+    async loadConversation(options: {
+        page?: number
+        size?: number
+        sort?: SortOrder,
+        onDecrypt?: (id: string, decrypted: MESSAGE ) => Promise<void>
+        getFromLocalCache?: (id: string) => Promise<MESSAGE|null>
+    }) {
 
-        const { page = 0, size = 20 } = pagination
+        const { page = 0, size = 20, sort, onDecrypt, getFromLocalCache} = options
 
         const history = await this.nodeClient.getConversation({
             conversation_id: this.header.conversation_id!,
@@ -253,17 +259,19 @@ export class Conversation {
         })
 
         const decryptedMessages = (await Promise.all(history.conversation?.messages!?.map(async (_message) => {
-            const decrypted = await fgsRnModule.AEAD_Decrypt(
+            const localCache = await getFromLocalCache?.(_message?.id!)
+            const decrypted = localCache == null ? await fgsRnModule.AEAD_Decrypt(
                 this.header.conversation_key,
                 _message?.encrypted_content ?? '',
                 Buffer.from(new Uint8Array()).toString('hex')
-            )
+            ) : ''
 
-            return deserializeMessage((decrypted as any)?.plaintext ?? decrypted ?? "")
+            const deserializedMessage = localCache ? localCache : deserializeMessage((decrypted as any)?.plaintext ?? decrypted ?? "")
 
+            onDecrypt?.(_message?.id!, deserializedMessage)
+
+            return deserializedMessage
         })))?.filter(a => a !== null)
-
-        // TODO: interact with local cache for storage
 
         return decryptedMessages
 
@@ -323,10 +331,44 @@ export class Conversation {
         })
 
 
-        return ack
+        return {ack, message: serializedMessage, initialSignature: Buffer.from(signature).toString('base64')}
 
     }
 
+    async stream(_client: Client, options: {onMessage: (message: MESSAGE) => Promise<void>, onError: (err: any)=> void, onComplete: ()=> void}){
+        const { onMessage, onError, onComplete } = options
+
+        const client = getWsClient(_client.onChainNode.protocol_endpoint)
+
+        return client.subscribe({
+            query: `
+                subscription streamConversations($conversation_id: String!) {
+                  conversation(conversation_id: $conversation_id) {
+                    conversation_id
+                    encrypted_content
+                    id
+                    published
+                  }
+                }
+            `,
+            variables: {
+                conversation_id: this.header.conversation_id,
+            }
+        },{
+            next(value){
+                if(value.data){
+                    onMessage(value.data as any)
+                }
+            },
+            error(error){
+                onError(error)
+            },
+            complete(){
+                onComplete()
+            }
+        })
+
+    }
 
     static async createConversation(client: Client, args: { participants: Array<string> }) {
 
@@ -418,7 +460,6 @@ export class Conversation {
         }
     }
 
-
     static async acceptInvite(client: Client, args: { invitation_id: string }) {
 
         const invitation = await client.nodeClient.getInvitation({
@@ -509,5 +550,6 @@ export class Conversation {
         return ack
 
     }
+
 
 }

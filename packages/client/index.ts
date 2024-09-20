@@ -1,5 +1,6 @@
 import {GraphQLClient} from "graphql-request";
 import {getSdk} from "./generated/sdk";
+export * from './generated/sdk'
 export * from './generated/types'
 import { createClient } from 'graphql-ws'
 

@@ -15,6 +15,7 @@ interface ResolverMap {
         invitations: FunResolver<any,{address: string, type: INVITE_TYPE}, any>
         conversation: FunResolver<any, {conversation_id: string, pagination: PaginationArgs, sort: SortOrder}, any>
         invitation: FunResolver<any, {invitation_id: string}, any>
+        lastMessage: FunResolver<any, {conversation_id: string}>
     },
     Subscription: {
         conversation: {
@@ -49,6 +50,29 @@ export const queryResolver: ResolverMap = {
                 })
             }
         },
+       lastMessage: async (_, args, __)=>{
+            const messages = await db.query.nodeInbox.findMany({
+                where(fields, ops) {
+                    return ops.and(
+                        ops.eq(fields.activity_type, 'message'),
+                        ops.sql`${schema.nodeInbox.activity} ->> 'conversation_id' = ${args.conversation_id}`
+                    )
+                },
+                orderBy: desc(schema.nodeInbox.recorded),
+                offset: 0,
+                limit: 1
+            })
+
+           const lastMessage = messages?.at(0)
+
+           if(!lastMessage) throw new Error("Unable to get last message")
+
+           const activity: Record<string, any> = lastMessage.activity as any
+           activity.published = new Date((activity)!.published)
+
+           return activity
+
+       },
         invitations: async (_, args, __)=>{
             const outGoingEvents = await db.query.nodeOutbox.findMany({
                 where(fields, ops){
@@ -145,7 +169,8 @@ export const queryResolver: ResolverMap = {
                 ...(invitation?.activity ?? null),
                published: (invitation?.activity as any)?.published ? new Date((invitation?.activity as any)?.published) : Date.now(),
            }
-       }
+       },
+
    },
     Subscription: {
        conversation: {

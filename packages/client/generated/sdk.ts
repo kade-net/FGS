@@ -73,6 +73,16 @@ export const StreamConversationsDocument = gql`
   }
 }
     `;
+export const GetLastMessageDocument = gql`
+    query getLastMessage($conversation_id: String!) {
+  lastMessage(conversation_id: $conversation_id) {
+    conversation_id
+    encrypted_content
+    id
+    published
+  }
+}
+    `;
 
 export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string, variables?: any) => Promise<T>;
 
@@ -98,6 +108,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     streamConversations(variables: Types.StreamConversationsSubscriptionVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<Types.StreamConversationsSubscription> {
       return withWrapper((wrappedRequestHeaders) => client.request<Types.StreamConversationsSubscription>(StreamConversationsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'streamConversations', 'subscription', variables);
+    },
+    getLastMessage(variables: Types.GetLastMessageQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<Types.GetLastMessageQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<Types.GetLastMessageQuery>(GetLastMessageDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getLastMessage', 'query', variables);
     }
   };
 }

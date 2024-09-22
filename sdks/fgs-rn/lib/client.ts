@@ -335,6 +335,10 @@ export class Conversation {
 
     }
 
+    static async getLastMessage(_client: Client, options: {conversation_id: string}) {
+        return await _client.nodeClient.getLastMessage({conversation_id: options.conversation_id})
+    }
+
     async stream(_client: Client, options: {onMessage: (message: MESSAGE) => Promise<void>, onError: (err: any)=> void, onComplete: ()=> void}){
         const { onMessage, onError, onComplete } = options
 

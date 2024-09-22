@@ -204,12 +204,9 @@ class FgsRnModule : Module() {
 
       val key = keyHex.hexStringToByteArray()
 
-      val plaintext = inputFile.readBytes()
-      val encryptedData = AESUtils.AEAD_Encrypt(key,plaintext)
+      val newEncryptedFile = AESUtils.EncryptFile(context, key, inputFile)
 
-      val encryptedFileUri = createEncryptedFile(context, inputFile, encryptedData!!.ciphertext)
-
-      return@AsyncFunction encryptedFileUri.toString()
+      return@AsyncFunction newEncryptedFile!!.toString()
     }
 
     AsyncFunction("DecryptFile"){key: String, inputPath: String  ->
@@ -219,12 +216,8 @@ class FgsRnModule : Module() {
 
       val dkey = key.hexStringToByteArray()
 
-      val ciphertext = inputFile.readBytes()
-      val result = AESUtils.AEAD_Decrypt(dkey, ciphertext)
-
-      val decryptedFileUri = createDecryptedFile(context, inputFile, result!!.plaintext)
-
-      return@AsyncFunction decryptedFileUri.toString()
+      val decryptedFile = AESUtils.DecryptFile(context, dkey, inputFile);
+      return@AsyncFunction decryptedFile!!.toString()
     }
 
 

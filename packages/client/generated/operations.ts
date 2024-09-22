@@ -45,3 +45,10 @@ export type StreamConversationsSubscriptionVariables = Types.Exact<{
 
 
 export type StreamConversationsSubscription = { __typename?: 'Subscription', conversation: { __typename?: 'Message', conversation_id: string, encrypted_content: string, id?: string | null, published: any } };
+
+export type GetLastMessageQueryVariables = Types.Exact<{
+  conversation_id: Types.Scalars['String']['input'];
+}>;
+
+
+export type GetLastMessageQuery = { __typename?: 'Query', lastMessage: { __typename?: 'Message', conversation_id: string, encrypted_content: string, id?: string | null, published: any } };

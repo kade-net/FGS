@@ -137,6 +137,7 @@ export type Query = {
   conversation: Conversation;
   invitation: Invitation;
   invitations?: Maybe<Array<Invitation>>;
+  lastMessage: Message;
 };
 
 
@@ -156,6 +157,11 @@ export type QueryInvitationArgs = {
 export type QueryInvitationsArgs = {
   address?: InputMaybe<Scalars['String']['input']>;
   type?: InputMaybe<Invite_Type>;
+};
+
+
+export type QueryLastMessageArgs = {
+  conversation_id: Scalars['String']['input'];
 };
 
 export type Reject = {

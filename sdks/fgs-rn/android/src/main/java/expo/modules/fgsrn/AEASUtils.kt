@@ -6,7 +6,14 @@ import javax.crypto.SecretKey
 import javax.crypto.KeyGenerator
 import javax.crypto.spec.GCMParameterSpec
 import javax.crypto.spec.SecretKeySpec
-
+import android.content.Context
+import java.io.File
+import java.io.FileOutputStream
+import android.net.Uri
+import expo.modules.kotlin.exception.Exceptions
+import java.util.*
+import java.io.IOException
+import java.nio.ByteBuffer
 
 data class AEADEncryptResult(val ciphertext: ByteArray)
 data class AEADDecryptResult(val plaintext: ByteArray, val valid: Boolean)
@@ -55,4 +62,90 @@ object AESUtils {
                 AEADDecryptResult(ByteArray(0), false)
             }
         }
+
+    fun EncryptFile(context: Context, key: ByteArray, inputFile: File): Uri? {
+        val bufferSize = 64 * 1024 // 64 KB, same as in iOS
+        var chunkIndex: Int = 0
+
+        val encryptedFileName = inputFile.name + ".encrypted"
+        val encryptedFile = File(context.cacheDir, encryptedFileName)
+
+        try {
+            inputFile.inputStream().use { inputStream ->
+                encryptedFile.outputStream().use { outputStream ->
+                    val buffer = ByteArray(bufferSize)
+                    var bytesRead: Int
+                    while (inputStream.read(buffer).also { bytesRead = it } != -1) {
+                        val chunkData = if (bytesRead < bufferSize) {
+                            buffer.copyOf(bytesRead)
+                        } else {
+                            buffer
+                        }
+
+                        // Construct a nonce with chunk index and pad it to 12 bytes (for AES GCM)
+                        val nonce = ByteBuffer.allocate(12).putInt(chunkIndex).array()
+                        chunkIndex++
+
+                        // Encrypt the chunk
+                        val encryptedChunk = AESUtils.AEAD_Encrypt(key, chunkData, nonce)?.ciphertext
+                        if (encryptedChunk == null) {
+                            throw IOException("Error encrypting chunk $chunkIndex")
+                        }
+
+                        // Write the encrypted chunk to the file
+                        outputStream.write(encryptedChunk)
+                    }
+                }
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+            return null
+        }
+
+        return Uri.fromFile(encryptedFile)
+    }
+
+    fun DecryptFile(context: Context, key: ByteArray, encryptedFile: File): Uri? {
+        val bufferSize = 64 * 1024 + 16 + 12 // 64 KB + 16 bytes for tag + 12 bytes for IV (nonce)
+        var chunkIndex: Int = 0
+
+        val decryptedFileName = getDecryptedFileNameWithRandomness(encryptedFile)
+        val decryptedFile = File(context.cacheDir, decryptedFileName)
+
+        try {
+            encryptedFile.inputStream().use { inputStream ->
+                decryptedFile.outputStream().use { outputStream ->
+                    val buffer = ByteArray(bufferSize)
+                    var bytesRead: Int
+                    while (inputStream.read(buffer).also { bytesRead = it } != -1) {
+                        val chunkData = if (bytesRead < bufferSize) {
+                            buffer.copyOf(bytesRead)
+                        } else {
+                            buffer
+                        }
+
+                        // Extract the nonce for this chunk (first 12 bytes)
+                        val nonce = ByteBuffer.allocate(12).putInt(chunkIndex).array()
+                        chunkIndex++
+
+                        // Decrypt the chunk
+                        val decryptedChunk = AESUtils.AEAD_Decrypt(key, chunkData, nonce)?.plaintext
+                        if (decryptedChunk == null) {
+                            throw IOException("Error decrypting chunk $chunkIndex")
+                        }
+
+                        // Write the decrypted chunk to the file
+                        outputStream.write(decryptedChunk)
+                    }
+                }
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+            return null
+        }
+
+        return Uri.fromFile(decryptedFile)
+    }
+
+
 }

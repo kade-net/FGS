@@ -1,6 +1,6 @@
 {
   "name": "@kade-net/fgs-rn",
-  "version": "0.1.17",
+  "version": "0.1.18",
   "description": "fgs react native sdk",
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",
@@ -32,7 +32,7 @@
   "homepage": "https://github.com/kade-net/FGS#readme",
   "dependencies": {
     "@aptos-labs/ts-sdk": "^1.27.0",
-    "@kade-net/fgs-node-client": "^0.0.10",
+    "@kade-net/fgs-node-client": "^0.0.11",
     "buffer": "^6.0.3",
     "expo": "~51.0.28",
     "react": "18.2.0",

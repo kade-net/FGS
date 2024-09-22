@@ -1,5 +1,5 @@
 import { Buffer } from 'buffer';
-import { getWsClient, StreamConversationsDocument } from '@kade-net/fgs-node-client'
+import { getWsClient, StreamConversationsDocument, Message as CMessage } from '@kade-net/fgs-node-client'
 import { getInbox, getNode } from "./function";
 import { FGS_NODE, INBOX } from "./contract";
 import nacl, { BoxKeyPair, SignKeyPair } from "tweetnacl";
@@ -56,16 +56,16 @@ export class Client {
 
     static async getAuthString(address: string) {
         const inbox = await getInbox(address)
-        return inbox.rand_auth_string
+        return inbox!.rand_auth_string
     }
 
     static async init(options: ClientInitOptions) {
 
         const inbox = await getInbox(options.inbox_address)
-        const node = await getNode(inbox.current_node)
+        const node = await getNode(inbox!.current_node)
 
 
-        const key_set_serialized = Buffer.from(inbox.encrypted_private_key_set, 'hex')
+        const key_set_serialized = Buffer.from(inbox!.encrypted_private_key_set, 'hex')
         const nonce = key_set_serialized.subarray(0, nacl.secretbox.nonceLength)
         const keys = key_set_serialized.subarray(nacl.secretbox.nonceLength)
 
@@ -85,10 +85,10 @@ export class Client {
             Buffer.from(keyData.signing_key, 'hex')
         )
 
-        if(inbox.encrypted_conversation_list?.trim()?.length == 0){
+        if(inbox!.encrypted_conversation_list?.trim()?.length == 0){
 
             return new Client(
-                inbox,
+                inbox!,
                 node,
                 boxKey,
                 signKey,
@@ -99,7 +99,7 @@ export class Client {
         }
 
         const conversationList = Buffer.from(
-            inbox.encrypted_conversation_list,
+            inbox!.encrypted_conversation_list,
             'hex'
         )
 
@@ -116,7 +116,7 @@ export class Client {
         )?.filter(c => (c?.trim()?.length ?? 0) > 0  )?.map(c => deserialize_conversation_header(c))
 
         return new Client(
-            inbox,
+            inbox!,
             node,
             boxKey,
             signKey,
@@ -177,7 +177,7 @@ export class Client {
         const nodes = await Promise.all(conversation_header.participants?.map(async (p) => {
             const inbox = await getInbox(p)
 
-            return inbox.current_node
+            return inbox!.current_node
         }))
 
         return new Conversation(
@@ -335,15 +335,27 @@ export class Conversation {
 
     }
 
-    static async getLastMessage(_client: Client, options: {conversation_id: string}) {
-        return await _client.nodeClient.getLastMessage({conversation_id: options.conversation_id})
+    async getLastMessage(){
+        const message = await this.nodeClient.getLastMessage({
+            conversation_id: this.header.conversation_id,
+        })
+
+        if(!message.lastMessage) return null;
+
+        const decrypted = await fgsRnModule.AEAD_Decrypt(
+            this.header.conversation_key,
+            message.lastMessage.encrypted_content,
+            Buffer.from(new Uint8Array()).toString('hex')
+        )
+
+        return deserializeMessage((decrypted as any)?.plaintext ?? decrypted ?? "")
     }
 
-    async stream(_client: Client, options: {onMessage: (message: MESSAGE) => Promise<void>, onError: (err: any)=> void, onComplete: ()=> void}){
+    async stream(options: {onMessage: (message: MESSAGE | null) => void, onError: (err: any)=> void, onComplete: ()=> void}){
         const { onMessage, onError, onComplete } = options
 
-        const client = getWsClient(_client.onChainNode.protocol_endpoint)
-
+        const client = getWsClient(this.client.onChainNode.protocol_endpoint)
+        const HEADER = this.header
         return client.subscribe({
             query: `
                 subscription streamConversations($conversation_id: String!) {
@@ -359,9 +371,23 @@ export class Conversation {
                 conversation_id: this.header.conversation_id,
             }
         },{
-            next(value){
+            async next(value){
                 if(value.data){
-                    onMessage(value.data as any)
+
+                    if(value.data){
+                        const data = value.data as {conversation: CMessage }
+                        const decrypted = await fgsRnModule.AEAD_Decrypt(
+                            HEADER.conversation_key,
+                            data.conversation.encrypted_content,
+                            Buffer.from(new Uint8Array()).toString('hex')
+                        )
+
+                        const deserialized = deserializeMessage((decrypted as any)?.plaintext ?? decrypted ?? "")
+
+                        onMessage(deserialized)
+                    }else{
+                        onMessage(null)
+                    }
                 }
             },
             error(error){
@@ -376,7 +402,7 @@ export class Conversation {
 
     static async createConversation(client: Client, args: { participants: Array<string> }) {
 
-        const participantInboxes = await Promise.all(
+        let _participantInboxes = await Promise.all(
             args.participants.map(async (participant) => {
                 const inbox = await getInbox(participant)
 
@@ -386,6 +412,8 @@ export class Conversation {
                 }
             })
         )
+
+        const participantInboxes = _participantInboxes.filter(p => p.inbox !== null) as Array<{inbox: INBOX, address: string}>
 
         const conversation_header = generate_conversation_header({
             participants: args.participants,
@@ -475,7 +503,7 @@ export class Conversation {
         const combinedEncryptedConversationId = Buffer.from(invitation.invitation.encrypted_conversation_id, 'hex')
 
         const shared_secret = nacl.box.before(
-            Buffer.from(initiator.encrypt_public_key, 'hex'),
+            Buffer.from(initiator!.encrypt_public_key, 'hex'),
             client.encryptionKeyPair.secretKey.subarray(0,32)
         )
 

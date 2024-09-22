@@ -30,10 +30,18 @@ export const getNode = async (namespace: string) => {
 
 export const getInbox = async (inbox_address: string) => {
 
-    return await aptos.getAccountResource<INBOX>({
-        accountAddress: inbox_address as string,
-        resourceType: `${INBOX_REGISTRY_MODULE}::Inbox`
-    })
+    try {
+        const inbox = await aptos.getAccountResource<INBOX>({
+            accountAddress: inbox_address as string,
+            resourceType: `${INBOX_REGISTRY_MODULE}::Inbox`
+        })
+
+        return inbox
+    }
+    catch (e)
+    {
+        return null
+    }
 
 
 }

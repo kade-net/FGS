@@ -44,7 +44,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - Yoga
   - FBLazyVector (0.74.3)
-  - FgsRn (0.1.0):
+  - FgsRn (0.1.20):
     - ExpoModulesCore
   - fmt (9.1.0)
   - glog (0.3.5)
@@ -1436,7 +1436,7 @@ SPEC CHECKSUMS:
   ExpoKeepAwake: 3b8815d9dd1d419ee474df004021c69fdd316d08
   ExpoModulesCore: d15ce10fea70ab650230feb69f45bb208d3a6596
   FBLazyVector: 7e977dd099937dc5458851233141583abba49ff2
-  FgsRn: 4ba5aa3b363d2973ba176f041762feb604a172fd
+  FgsRn: 895afb8b410a296b21671beefd7d0227723a53c4
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
   glog: fdfdfe5479092de0c4bdbebedd9056951f092c4f
   hermes-engine: 1f547997900dd0752dc0cc0ae6dd16173c49e09b

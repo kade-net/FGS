@@ -14,6 +14,7 @@ import expo.modules.kotlin.exception.Exceptions
 import java.util.*
 import java.io.IOException
 import java.nio.ByteBuffer
+import java.nio.ByteOrder
 
 data class AEADEncryptResult(val ciphertext: ByteArray)
 data class AEADDecryptResult(val plaintext: ByteArray, val valid: Boolean)
@@ -83,11 +84,14 @@ object AESUtils {
                         }
 
                         // Construct a nonce with chunk index and pad it to 12 bytes (for AES GCM)
-                        val nonce = ByteBuffer.allocate(12).putInt(chunkIndex).array()
+                        val associatedData = ByteBuffer.allocate(4)
+                                                .order(ByteOrder.BIG_ENDIAN)
+                                                .putInt(chunkIndex)
+                                                .array()
                         chunkIndex++
 
                         // Encrypt the chunk
-                        val encryptedChunk = AESUtils.AEAD_Encrypt(key, chunkData, nonce)?.ciphertext
+                        val encryptedChunk = AESUtils.AEAD_Encrypt(key, chunkData, associatedData)?.ciphertext
                         if (encryptedChunk == null) {
                             throw IOException("Error encrypting chunk $chunkIndex")
                         }
@@ -125,11 +129,14 @@ object AESUtils {
                         }
 
                         // Extract the nonce for this chunk (first 12 bytes)
-                        val nonce = ByteBuffer.allocate(12).putInt(chunkIndex).array()
+                        val associatedData = ByteBuffer.allocate(4)
+                                                .order(ByteOrder.BIG_ENDIAN)
+                                                .putInt(chunkIndex)
+                                                .array()
                         chunkIndex++
 
                         // Decrypt the chunk
-                        val decryptedChunk = AESUtils.AEAD_Decrypt(key, chunkData, nonce)?.plaintext
+                        val decryptedChunk = AESUtils.AEAD_Decrypt(key, chunkData, associatedData)?.plaintext
                         if (decryptedChunk == null) {
                             throw IOException("Error decrypting chunk $chunkIndex")
                         }

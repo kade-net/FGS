@@ -70,29 +70,15 @@ struct AESUtils {
             outputHandle.closeFile()
         }
 
-        let bufferSize = 64 * 1024 // 64 KB
-        var chunkIndex: Int = 0
+        let fileData = inputHandle.readDataToEndOfFile()
+        let aData = Data(hexString: "")
 
-        while autoreleasepool(invoking: {
-            let chunkData = inputHandle.readData(ofLength: bufferSize)
-            if chunkData.isEmpty {
-                return false
-            }
+        guard let encryptedData = AESUtils.AEAD_Encrypt(key: key, plaintext: fileData, associatedData: aData)?.ciphertext else {
+                                            NSLog("Error encrypting chunk")
+                                            return nil
+                                        }
 
-            var nonce = withUnsafeBytes(of: chunkIndex.bigEndian) { Data($0) }
-            nonce.append(Data(count: 4)) // Padding the nonce to 12 bytes for AES-GCM
-
-            chunkIndex += 1
-            let associatedData = withUnsafeBytes(of: chunkIndex.bigEndian) { Data($0) }
-
-            guard let encryptedChunk = AESUtils.AEAD_Encrypt(key: key, plaintext: chunkData, associatedData: associatedData)?.ciphertext else {
-                NSLog("Error encrypting chunk \(chunkIndex)")
-                return false
-            }
-
-            outputHandle.write(encryptedChunk)
-            return true
-        }) {}
+        outputHandle.write(encryptedData)
 
         return encryptedFileUrl.path
     }
@@ -116,30 +102,18 @@ struct AESUtils {
                 outputHandle.closeFile()
             }
 
-            let bufferSize = 64 * 1024 + 16 + 12 // 64 KB + 16 bytes for the tag + 12 for the iv
-            var chunkIndex: UInt64 = 0
+            let associatedData = Data(hexString: "")
+            let fileData = inputHandle.readDataToEndOfFile()
 
-            while autoreleasepool(invoking: {
-                let chunkData = inputHandle.readData(ofLength: bufferSize)
-                if chunkData.isEmpty {
-                    return false
-                }
+            guard let decryptedChunk = AEAD_Decrypt(key: key, encryptedMessage: fileData, associatedData: associatedData) else {
+                                print("Error decrypting chunk")
+                                return nil
+            }
 
-                chunkIndex += 1
-
-                let associatedData = withUnsafeBytes(of: chunkIndex.bigEndian) { Data($0) }
-
-                guard let decryptedChunk = AEAD_Decrypt(key: key, encryptedMessage: chunkData, associatedData: associatedData) else {
-                    print("Error decrypting chunk")
-                    return false
-                }
-
-                outputHandle.write(decryptedChunk.plaintext)
-                return true
-            }) {}
+            outputHandle.write(decryptedChunk.plaintext)
 
             return decryptedFileUrl.path
-        }
+    }
 
     private static func randomIV(length: Int) -> Data {
         var iv = Data(count: length)

@@ -1,6 +1,6 @@
 {
   "name": "@kade-net/fgs-rn",
-  "version": "0.1.22",
+  "version": "0.1.23",
   "description": "fgs react native sdk",
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",

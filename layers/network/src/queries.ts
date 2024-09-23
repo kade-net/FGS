@@ -65,12 +65,12 @@ export const queryResolver: ResolverMap = {
 
            const lastMessage = messages?.at(0)
 
-           if(!lastMessage) throw new Error("Unable to get last message")
+           if(!lastMessage) return null
 
            const activity: Record<string, any> = lastMessage.activity as any
            activity.published = new Date((activity)!.published)
 
-           return activity
+           return activity ?? null
 
        },
         invitations: async (_, args, __)=>{

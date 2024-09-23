@@ -1,6 +1,6 @@
 import {FunResolver, PaginationArgs, SortOrder} from "./types";
 import db, {schema} from "storage";
-import {asc, desc} from "drizzle-orm";
+import {and, asc, desc, eq, gte, sql, count} from "drizzle-orm";
 import {ACCEPT, INVITATION, REJECT} from "validation";
 import {conversationChannel} from "./commChannel";
 
@@ -16,6 +16,7 @@ interface ResolverMap {
         conversation: FunResolver<any, {conversation_id: string, pagination: PaginationArgs, sort: SortOrder}, any>
         invitation: FunResolver<any, {invitation_id: string}, any>
         lastMessage: FunResolver<any, {conversation_id: string}>
+        conversationMonitor: FunResolver<any, {lastCheck: string, conversation_ids: Array<string>}, any>
     },
     Subscription: {
         conversation: {
@@ -170,7 +171,38 @@ export const queryResolver: ResolverMap = {
                published: (invitation?.activity as any)?.published ? new Date((invitation?.activity as any)?.published) : Date.now(),
            }
        },
+       conversationMonitor: async (_, args, __)=>{
+            const lastCheckTimestamp = parseInt(args.lastCheck)
 
+           const newMessagesCounts = await Promise.all(args?.conversation_ids?.map(async (c)=>{
+
+               try {
+                   const countResult = await db.selectDistinct({
+                       count: count(schema.nodeInbox.id)
+                   }).from(schema.nodeInbox).where(and(
+                       sql`${schema.nodeInbox.activity} ->> 'conversation_id' = ${c}`,
+                       gte(schema.nodeInbox.recorded, new Date(lastCheckTimestamp)),
+                       eq(schema.nodeInbox.activity_type, 'message')
+                   ))
+
+                   return countResult?.at(0)?.count ?? 0
+               }
+               catch (e)
+               {
+                   console.log("Something went wrong", e)
+                   return 0
+               }
+           }))
+
+           const total = newMessagesCounts.reduce((p, c)=>{
+               return p + c
+           },0)
+
+
+           return {
+                count: total ?? 0
+           }
+       }
    },
     Subscription: {
        conversation: {

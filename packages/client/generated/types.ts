@@ -57,6 +57,11 @@ export type Conversation = {
   messages?: Maybe<Array<Maybe<Message>>>;
 };
 
+export type ConversationsMonitor = {
+  __typename?: 'ConversationsMonitor';
+  count?: Maybe<Scalars['Int']['output']>;
+};
+
 export type Delivery_Activity = {
   __typename?: 'DELIVERY_ACTIVITY';
   activity: Signed_Activity;
@@ -135,9 +140,10 @@ export type PaginationArgs = {
 export type Query = {
   __typename?: 'Query';
   conversation: Conversation;
+  conversationMonitor?: Maybe<ConversationsMonitor>;
   invitation: Invitation;
   invitations?: Maybe<Array<Invitation>>;
-  lastMessage: Message;
+  lastMessage?: Maybe<Message>;
 };
 
 
@@ -146,6 +152,12 @@ export type QueryConversationArgs = {
   pagination?: InputMaybe<PaginationArgs>;
   sort?: InputMaybe<SortOrder>;
   source_nodes?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+};
+
+
+export type QueryConversationMonitorArgs = {
+  conversation_ids?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  lastCheck?: InputMaybe<Scalars['String']['input']>;
 };
 
 

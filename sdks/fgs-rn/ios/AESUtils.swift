@@ -70,10 +70,10 @@ struct AESUtils {
             outputHandle.closeFile()
         }
 
+        let associatedData = Data(hexString: "")
         let fileData = inputHandle.readDataToEndOfFile()
-        let aData = Data(hexString: "")
 
-        guard let encryptedData = AESUtils.AEAD_Encrypt(key: key, plaintext: fileData, associatedData: aData)?.ciphertext else {
+        guard let encryptedData = AESUtils.AEAD_Encrypt(key: key, plaintext: fileData, associatedData: associatedData)?.ciphertext else {
                                             NSLog("Error encrypting chunk")
                                             return nil
                                         }

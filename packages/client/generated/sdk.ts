@@ -83,6 +83,13 @@ export const GetLastMessageDocument = gql`
   }
 }
     `;
+export const MonitorConversationsDocument = gql`
+    query monitorConversations($lastCheck: String!, $conversation_ids: [String]) {
+  conversationMonitor(lastCheck: $lastCheck, conversation_ids: $conversation_ids) {
+    count
+  }
+}
+    `;
 
 export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string, variables?: any) => Promise<T>;
 
@@ -111,6 +118,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     getLastMessage(variables: Types.GetLastMessageQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<Types.GetLastMessageQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<Types.GetLastMessageQuery>(GetLastMessageDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getLastMessage', 'query', variables);
+    },
+    monitorConversations(variables: Types.MonitorConversationsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<Types.MonitorConversationsQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<Types.MonitorConversationsQuery>(MonitorConversationsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'monitorConversations', 'query', variables);
     }
   };
 }

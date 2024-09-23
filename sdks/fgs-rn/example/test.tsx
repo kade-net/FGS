@@ -3,9 +3,44 @@ import React from 'react'
 import nacl from 'tweetnacl'
 import fgs from 'fgs-rn'
 import * as ImagePicker from 'expo-image-picker'
+import * as FileSystem from 'expo-file-system'
+import {ba} from "@aptos-labs/ts-sdk/dist/common/accountAddress-LOYE4_sG";
+
+function extractFileName(uri: string){
+    return uri?.replace('https://', '')?.split('/').pop()
+}
 
 const TestEncDec = () => {
     const [decrypted, setDecrypted] = React.useState<string | null>(null)
+
+    const downloadAndProcessEncrypted = async () => {
+        const URI = 'https://d35fqrnmq0pxki.cloudfront.net/uploads/0xdcd4b89cb26c3903c247c9ab17d096f4c43842e9205d9d7475bc287c9569d1f8/1e4b0e7e00f38a563c106c222f094f27-1000034615.jpg.encrypted'
+
+        const ENCRYPTION_KEY = 'dd6976e28d8ddf5a0457cff4f98a1982d40310c54b34d1a7d2db1ab95b73afa8'
+
+        let fileName = extractFileName(URI)
+        fileName = `${FileSystem.documentDirectory}${fileName}`
+        const res = await FileSystem.downloadAsync(URI, fileName)
+        const base64 = await FileSystem.readAsStringAsync(fileName, {
+            encoding: 'base64'
+        })
+
+        const decrypted = await fgs.DecryptFile(ENCRYPTION_KEY, res.uri)
+
+        console.log("decrypted::", decrypted)
+
+        const decryptedData = await FileSystem.readAsStringAsync(decrypted, {
+            encoding: 'base64'
+        })
+
+        console.log("decryptedData::", decryptedData.slice(0,1000))
+
+        setDecrypted(decrypted)
+        //
+        // console.log("Start : \n", base64.slice(0,1000))
+        // console.log("End : \n", base64.slice(base64.length - 1000))
+    }
+
     const handleBasicEncryptDecrypt = async () => {
         const key = nacl.randomBytes(32)
         const encryptionKey = '01049eb7881c9bdf2fa44532ed7914396b918e1f68f9517ed4146dd42771183a'
@@ -36,8 +71,17 @@ const TestEncDec = () => {
 
         console.log("main asset::", mainAsset.uri)
         console.log("key::", keyAsString)
+
         const encryptedFile = await fgs.EncryptFile(keyAsString, mainAsset.uri)
+
         console.log("encrypted file::", encryptedFile)
+        await FileSystem.deleteAsync(mainAsset.uri)
+
+        const encryptedData = await FileSystem.readAsStringAsync(encryptedFile, {
+            encoding: 'base64'
+        })
+
+        console.log("encryptedData::", encryptedData.slice(0,500))
         // console.log("encrypted url::", encryptedUrl)
 
         // const decryptedUrl = mainAsset.uri?.replace('.png', 'cool-stuff.png')
@@ -63,6 +107,8 @@ const TestEncDec = () => {
                 title="Basic Encrypt Decrypt File"
                 onPress={handleAssetEncryptDecrypt}
             />
+
+            <Button title={'File Data'} onPress={downloadAndProcessEncrypted} />
             {
                 decrypted && <Image
                     source={{

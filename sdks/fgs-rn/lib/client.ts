@@ -223,7 +223,15 @@ export class Client {
 
     }
 
+    async monitorConversations(options: {last_read?: number, conversations?: Array<string> }){
+        const { last_read, conversations } = options
+        const res = await this.nodeClient.monitorConversations({
+            conversation_ids: conversations ?? this.conversationList?.map(c=>c.conversation_id),
+            lastCheck: last_read?.toString() ?? Date.now().toString(),
+        })
 
+        return res?.conversationMonitor?.count ?? 0
+    }
 }
 
 export class Conversation {

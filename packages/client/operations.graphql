@@ -68,3 +68,9 @@ query getLastMessage($conversation_id:String!) {
         published
     }
 }
+
+query monitorConversations($lastCheck: String!, $conversation_ids: [String]) {
+    conversationMonitor(lastCheck: $lastCheck,conversation_ids: $conversation_ids) {
+        count
+    }
+}

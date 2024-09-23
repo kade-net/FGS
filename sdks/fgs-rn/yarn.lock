@@ -2346,10 +2346,10 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
-"@kade-net/fgs-node-client@^0.0.11":
-  version "0.0.11"
-  resolved "https://registry.yarnpkg.com/@kade-net/fgs-node-client/-/fgs-node-client-0.0.11.tgz#016908de4b4d4cdedeef71ba03c7407e1c093b3a"
-  integrity sha512-Ze2kJiXcEh5hfiMC6i4mWkKzzEHfWeRphGOlHlU26neI7i/U8yCPBlK1QvpUVbnsSycLFifavh1aNKt02OZwsQ==
+"@kade-net/fgs-node-client@^0.0.12":
+  version "0.0.12"
+  resolved "https://registry.yarnpkg.com/@kade-net/fgs-node-client/-/fgs-node-client-0.0.12.tgz#51eb070c0aa3f45209e1cee7080601dd57a705ff"
+  integrity sha512-9tfSu9Ubu8KPQvEWCc50gdTon3g/Wrynf1wi0iRLSfeduygyKCt6a+BGSZm7JupZTvwEHzSdFGuTbPgoOKgB2g==
   dependencies:
     "@graphql-codegen/cli" "^5.0.2"
     "@graphql-codegen/client-preset" "^4.3.3"

@@ -51,4 +51,12 @@ export type GetLastMessageQueryVariables = Types.Exact<{
 }>;
 
 
-export type GetLastMessageQuery = { __typename?: 'Query', lastMessage: { __typename?: 'Message', conversation_id: string, encrypted_content: string, id?: string | null, published: any } };
+export type GetLastMessageQuery = { __typename?: 'Query', lastMessage?: { __typename?: 'Message', conversation_id: string, encrypted_content: string, id?: string | null, published: any } | null };
+
+export type MonitorConversationsQueryVariables = Types.Exact<{
+  lastCheck: Types.Scalars['String']['input'];
+  conversation_ids?: Types.InputMaybe<Array<Types.InputMaybe<Types.Scalars['String']['input']>> | Types.InputMaybe<Types.Scalars['String']['input']>>;
+}>;
+
+
+export type MonitorConversationsQuery = { __typename?: 'Query', conversationMonitor?: { __typename?: 'ConversationsMonitor', count?: number | null } | null };

@@ -125,6 +125,10 @@ type Mutation {
     submitDelivery(input: DeliveryActivityInput!): Ack!
 }
 
+type ConversationsMonitor {
+    count: Int
+}
+
 input PaginationArgs {
     page: Int
     size: Int
@@ -140,7 +144,7 @@ type Query {
     lastMessage(conversation_id: String!): Message
     invitations(address: String, type: INVITE_TYPE): [Invitation!]
     invitation(invitation_id: String!): Invitation!
-
+    conversationMonitor(lastCheck: String, conversation_ids: [String]): ConversationsMonitor
 }
 
 type Subscription {
